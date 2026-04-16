@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookmarks | SecureScan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.css">
+    <script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <div class="container">
+                <a href="{{ url_for('index') }}" class="logo">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>SecureScan</span>
+                </a>
+                
+                <div class="nav-links">
+                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('history') }}">History</a>
+                    <a href="{{ url_for('api_keys') }}">API Keys</a>
+                    <a href="{{ url_for('bookmarks') }}" class="active">Bookmarks</a>
+                    <div class="user-info">
+                        <div class="user-avatar">{{ current_user.username[0]|upper }}</div>
+                        <span>{{ current_user.username }}</span>
+                        {% if current_user.is_admin %}
+                            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline" style="margin-left: 10px;">Admin</a>
+                        {% endif %}
+                        <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="container">
+                <h2 style="margin-bottom: 30px;">Bookmarked Scans</h2>
+                
+                {% if bookmarks %}
+                <div class="section-card">
+                    <table class="scans-table">
+                        <thead>
+                            <tr>
+                                <th>URL</th>
+                                <th>Prediction</th>
+                                <th>Confidence</th>
+                                <th>Bookmarked On</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for bookmark in bookmarks %}
+                            <tr>
+                                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">{{ bookmark.scan.url }}</td>
+                                <td>
+                                    <span class="status-badge {{ 'status-safe' if bookmark.scan.prediction == 'Safe' else 'status-phishing' }}">
+                                        {{ bookmark.scan.prediction }}
+                                    </span>
+                                </td>
+                                <td>{{ (bookmark.scan.confidence * 100)|round(1) }}%</td>
+                                <td>{{ bookmark.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>
+                                    <a href="{{ url_for('scan_detail', scan_id=bookmark.scan.id) }}" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;">View</a>
+                                    <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; margin-left: 5px;" onclick="removeBookmark({{ bookmark.scan.id }})">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="section-card" style="text-align: center; padding: 60px;">
+                    <i class="fas fa-bookmark" style="font-size: 48px; color: var(--gray); margin-bottom: 20px;"></i>
+                    <h3 style="color: var(--gray);">No bookmarks yet</h3>
+                    <p style="color: var(--gray); margin-top: 10px;">Bookmark scans from your history to access them quickly.</p>
+                    <a href="{{ url_for('history') }}" class="btn btn-primary" style="margin-top: 20px;">
+                        <i class="fas fa-history"></i> View History
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        function removeBookmark(scanId) {
+            fetch(`/bookmarks/${scanId}/remove`, { method: 'POST' })
+                .then(() => window.location.reload());
+        }
+    </script>
+</body>
+</html>

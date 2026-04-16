@@ -5,155 +5,185 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scan Details | SecureScan</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.css">
+    <script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
 </head>
 <body>
+    <div class="background-effects">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
     <div class="dashboard">
-        <div class="dashboard-header">
+        <div class="navbar" style="position: fixed; top: 0; z-index: 1001;">
             <div class="container">
                 <a href="{{ url_for('index') }}" class="logo">
                     <i class="fas fa-shield-halved"></i>
                     <span>SecureScan</span>
                 </a>
+                
                 <div class="nav-links">
                     <a href="{{ url_for('dashboard') }}">Dashboard</a>
                     <a href="{{ url_for('history') }}">History</a>
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
                     <div class="user-info">
+                        <div class="user-avatar">{{ current_user.username[0]|upper }}</div>
                         <span>{{ current_user.username }}</span>
-                        <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
                     </div>
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
                 </div>
             </div>
         </div>
         
-        <div class="dashboard-content">
+        <div class="dashboard-content" style="padding-top: 120px;">
             <div class="container">
-                <a href="{{ url_for('history') }}" class="btn btn-outline" style="margin-bottom: 20px;">
+                <a href="{{ url_for('history') }}" class="btn btn-outline" style="margin-bottom: 30px;">
                     <i class="fas fa-arrow-left"></i> Back to History
                 </a>
                 
-                <div class="scan-detail">
-                    <h2>
-                        <i class="fas fa-{{ 'check-circle' if scan.prediction == 'Safe' else 'exclamation-triangle' }}" 
-                           style="color: {{ '#10b981' if scan.prediction == 'Safe' else '#ef4444' }};"></i>
-                        {{ scan.prediction }}
-                    </h2>
-                    
-                    <div style="background: var(--light); padding: 20px; border-radius: 8px; margin-bottom: 30px;">
-                        <strong>URL:</strong> <span style="word-break: break-all;">{{ scan.url }}</span>
+                <div class="section-card" style="padding: 40px;">
+                    <div style="text-align: center; margin-bottom: 40px;">
+                        <div style="width: 100px; height: 100px; background: linear-gradient(135deg, {{ '#22d3ee' if scan.prediction == 'Safe' else '#f43f5e' }}, {{ '#06b6d4' if scan.prediction == 'Safe' else '#e11d48' }}); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px; box-shadow: 0 0 40px {{ 'var(--success-glow)' if scan.prediction == 'Safe' else 'var(--danger-glow)' }};">
+                            <i class="fas fa-{{ 'check-circle' if scan.prediction == 'Safe' else 'exclamation-triangle' }}" style="font-size: 48px; color: white;"></i>
+                        </div>
+                        <h2 style="font-size: 36px; margin-bottom: 10px;">{{ scan.prediction }}</h2>
+                        <p style="color: var(--text-secondary);">Confidence: {{ (scan.confidence * 100)|round(1) }}%</p>
                     </div>
                     
-                    <div class="features-grid-detail">
-                        <div class="feature-item">
-                            <label>Confidence</label>
-                            <div class="value" style="color: {{ '#10b981' if scan.prediction == 'Safe' else '#ef4444' }};">{{ (scan.confidence * 100)|round(1) }}%</div>
+                    <div style="background: var(--glass); padding: 20px; border-radius: 15px; margin-bottom: 30px; border: 1px solid var(--border);">
+                        <strong style="color: var(--text-secondary);">Scanned URL:</strong>
+                        <span style="word-break: break-all; display: block; margin-top: 8px; font-family: 'Courier New', monospace;">{{ scan.url }}</span>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px;">
+                        <div class="feature-item" style="background: var(--glass); padding: 20px; border-radius: 15px; border: 1px solid var(--border); text-align: center;">
+                            <label style="display: block; color: var(--text-secondary); margin-bottom: 8px;">Scan Type</label>
+                            <div class="value" style="font-size: 18px; text-transform: uppercase;">{{ scan.scan_type }}</div>
                         </div>
-                        <div class="feature-item">
-                            <label>Scan Type</label>
-                            <div class="value">{{ scan.scan_type }}</div>
+                        <div class="feature-item" style="background: var(--glass); padding: 20px; border-radius: 15px; border: 1px solid var(--border); text-align: center;">
+                            <label style="display: block; color: var(--text-secondary); margin-bottom: 8px;">Date</label>
+                            <div class="value" style="font-size: 18px;">{{ scan.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
                         </div>
-                        <div class="feature-item">
-                            <label>Date</label>
-                            <div class="value">{{ scan.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                        <div class="feature-item" style="background: var(--glass); padding: 20px; border-radius: 15px; border: 1px solid var(--border); text-align: center;">
+                            <label style="display: block; color: var(--text-secondary); margin-bottom: 8px;">Scan ID</label>
+                            <div class="value" style="font-size: 18px;">#{{ scan.id }}</div>
                         </div>
                     </div>
                     
-                    <h3 style="margin: 30px 0 15px;">URL Features</h3>
-                    <div class="features-grid-detail">
-                        <div class="feature-item">
-                            <label>URL Length</label>
-                            <div class="value">{{ scan.url_length or 'N/A' }}</div>
+                    <h3 style="margin-bottom: 25px;"><i class="fas fa-list-ul" style="color: var(--primary);"></i> URL Features</h3>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 40px;">
+                        <div class="feature-item" style="background: var(--glass); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+                            <label style="display: block; color: var(--text-secondary); font-size: 12px;">URL Length</label>
+                            <div class="value" style="font-size: 20px;">{{ scan.url_length or 'N/A' }}</div>
                         </div>
-                        <div class="feature-item">
-                            <label>Domain Length</label>
-                            <div class="value">{{ scan.domain_length or 'N/A' }}</div>
+                        <div class="feature-item" style="background: var(--glass); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+                            <label style="display: block; color: var(--text-secondary); font-size: 12px;">Domain Length</label>
+                            <div class="value" style="font-size: 20px;">{{ scan.domain_length or 'N/A' }}</div>
                         </div>
-                        <div class="feature-item">
-                            <label>HTTPS</label>
-                            <div class="value">{{ 'Yes' if scan.has_https else 'No' }}</div>
+                        <div class="feature-item" style="background: var(--glass); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+                            <label style="display: block; color: var(--text-secondary); font-size: 12px;">HTTPS</label>
+                            <div class="value" style="font-size: 20px;">{{ 'Yes' if scan.has_https else 'No' }}</div>
                         </div>
-                        <div class="feature-item">
-                            <label>IP Address</label>
-                            <div class="value">{{ 'Yes' if scan.has_ip else 'No' }}</div>
+                        <div class="feature-item" style="background: var(--glass); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+                            <label style="display: block; color: var(--text-secondary); font-size: 12px;">IP Address</label>
+                            <div class="value" style="font-size: 20px;">{{ 'Yes' if scan.has_ip else 'No' }}</div>
                         </div>
-                        <div class="feature-item">
-                            <label>Dots</label>
-                            <div class="value">{{ scan.num_dots or 0 }}</div>
+                        <div class="feature-item" style="background: var(--glass); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+                            <label style="display: block; color: var(--text-secondary); font-size: 12px;">Dots</label>
+                            <div class="value" style="font-size: 20px;">{{ scan.num_dots or 0 }}</div>
                         </div>
-                        <div class="feature-item">
-                            <label>Hyphens</label>
-                            <div class="value">{{ scan.num_hyphens or 0 }}</div>
+                        <div class="feature-item" style="background: var(--glass); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+                            <label style="display: block; color: var(--text-secondary); font-size: 12px;">Hyphens</label>
+                            <div class="value" style="font-size: 20px;">{{ scan.num_hyphens or 0 }}</div>
                         </div>
-                        <div class="feature-item">
-                            <label>Underscores</label>
-                            <div class="value">{{ scan.num_underscores or 0 }}</div>
+                        <div class="feature-item" style="background: var(--glass); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+                            <label style="display: block; color: var(--text-secondary); font-size: 12px;">Parameters</label>
+                            <div class="value" style="font-size: 20px;">{{ scan.num_params or 0 }}</div>
                         </div>
-                        <div class="feature-item">
-                            <label>@ Symbol</label>
-                            <div class="value">{{ scan.num_at or 0 }}</div>
-                        </div>
-                        <div class="feature-item">
-                            <label>Parameters</label>
-                            <div class="value">{{ scan.num_params or 0 }}</div>
-                        </div>
-                        <div class="feature-item">
-                            <label>Subdomains</label>
-                            <div class="value">{{ scan.num_subdomains or 0 }}</div>
-                        </div>
-                        <div class="feature-item">
-                            <label>Urgency Score</label>
-                            <div class="value">{{ scan.urgency_score or 0 }}</div>
+                        <div class="feature-item" style="background: var(--glass); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+                            <label style="display: block; color: var(--text-secondary); font-size: 12px;">Subdomains</label>
+                            <div class="value" style="font-size: 20px;">{{ scan.num_subdomains or 0 }}</div>
                         </div>
                     </div>
                     
                     {% if scan.rf_probability %}
-                    <h3 style="margin: 30px 0 15px;">Model Predictions</h3>
-                    <div class="model-predictions">
-                        <div class="model-bar">
-                            <span class="label">Random Forest</span>
-                            <div class="bar"><div class="bar-fill" style="width: {{ scan.rf_probability * 100 }}%; background: var(--primary);"></div></div>
-                            <span class="value">{{ (scan.rf_probability * 100)|round(1) }}%</span>
+                    <h3 style="margin-bottom: 25px;"><i class="fas fa-robot" style="color: var(--secondary);"></i> Model Predictions</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="model-bar" style="background: var(--glass); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+                            <span class="label" style="color: var(--text-secondary);">Random Forest</span>
+                            <div class="bar" style="height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;">
+                                <div class="bar-fill" style="width: {{ scan.rf_probability * 100 }}%; background: linear-gradient(90deg, var(--primary), var(--secondary)); height: 100%;"></div>
+                            </div>
+                            <span class="value" style="color: var(--text-primary);">{{ (scan.rf_probability * 100)|round(1) }}%</span>
                         </div>
-                        <div class="model-bar">
-                            <span class="label">XGBoost</span>
-                            <div class="bar"><div class="bar-fill" style="width: {{ scan.xgb_probability * 100 }}%; background: var(--secondary);"></div></div>
-                            <span class="value">{{ (scan.xgb_probability * 100)|round(1) }}%</span>
+                        <div class="model-bar" style="background: var(--glass); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+                            <span class="label" style="color: var(--text-secondary);">XGBoost</span>
+                            <div class="bar" style="height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;">
+                                <div class="bar-fill" style="width: {{ scan.xgb_probability * 100 }}%; background: linear-gradient(90deg, #a855f7, #7c3aed); height: 100%;"></div>
+                            </div>
+                            <span class="value" style="color: var(--text-primary);">{{ (scan.xgb_probability * 100)|round(1) }}%</span>
                         </div>
-                        <div class="model-bar">
-                            <span class="label">LSTM</span>
-                            <div class="bar"><div class="bar-fill" style="width: {{ scan.lstm_probability * 100 }}%; background: var(--warning);"></div></div>
-                            <span class="value">{{ (scan.lstm_probability * 100)|round(1) }}%</span>
+                        <div class="model-bar" style="background: var(--glass); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+                            <span class="label" style="color: var(--text-secondary);">LSTM</span>
+                            <div class="bar" style="height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;">
+                                <div class="bar-fill" style="width: {{ scan.lstm_probability * 100 }}%; background: linear-gradient(90deg, #f472b6, #db2777); height: 100%;"></div>
+                            </div>
+                            <span class="value" style="color: var(--text-primary);">{{ (scan.lstm_probability * 100)|round(1) }}%</span>
                         </div>
-                        <div class="model-bar">
-                            <span class="label">BERT</span>
-                            <div class="bar"><div class="bar-fill" style="width: {{ scan.bert_probability * 100 }}%; background: var(--danger);"></div></div>
-                            <span class="value">{{ (scan.bert_probability * 100)|round(1) }}%</span>
-                        </div>
-                        <div class="model-bar">
-                            <span class="label">Ensemble</span>
-                            <div class="bar"><div class="bar-fill" style="width: {{ scan.ensemble_probability * 100 }}%; background: var(--dark);"></div></div>
-                            <span class="value">{{ (scan.ensemble_probability * 100)|round(1) }}%</span>
+                        <div class="model-bar" style="background: var(--glass); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
+                            <span class="label" style="color: var(--text-secondary);">BERT</span>
+                            <div class="bar" style="height: 8px; background: var(--border); border-radius: 4px; overflow: hidden;">
+                                <div class="bar-fill" style="width: {{ scan.bert_probability * 100 }}%; background: linear-gradient(90deg, #fbbf24, #f59e0b); height: 100%;"></div>
+                            </div>
+                            <span class="value" style="color: var(--text-primary);">{{ (scan.bert_probability * 100)|round(1) }}%</span>
                         </div>
                     </div>
                     {% endif %}
                     
-                    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--border);">
-                        <h3 style="margin-bottom: 15px;">Feedback</h3>
-                        <p style="color: var(--gray); margin-bottom: 15px;">Was this prediction correct?</p>
-                        <form method="POST" action="{{ url_for('feedback') }}">
-                            <input type="hidden" name="scan_id" value="{{ scan.id }}">
-                            <button type="submit" name="is_correct" value="true" class="btn btn-success" style="margin-right: 10px;">
-                                <i class="fas fa-check"></i> Correct
+                    <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid var(--border); display: flex; gap: 20px; flex-wrap: wrap; align-items: center;">
+                        <div style="flex: 1;">
+                            <h3 style="margin-bottom: 15px;"><i class="fas fa-comment-dots" style="color: var(--accent);"></i> Feedback</h3>
+                            <p style="color: var(--text-secondary); margin-bottom: 15px;">Was this prediction correct?</p>
+                            <form method="POST" action="{{ url_for('feedback') }}" style="display: flex; gap: 15px; flex-wrap: wrap;">
+                                <input type="hidden" name="scan_id" value="{{ scan.id }}">
+                                <button type="submit" name="is_correct" value="true" class="btn btn-success">
+                                    <i class="fas fa-check"></i> Correct
+                                </button>
+                                <button type="submit" name="is_correct" value="false" class="btn btn-danger">
+                                    <i class="fas fa-times"></i> Incorrect
+                                </button>
+                            </form>
+                        </div>
+                        <div style="display: flex; gap: 10px;">
+                            <a href="/export/json/{{ scan.id }}" class="btn btn-outline">
+                                <i class="fas fa-file-code"></i> JSON
+                            </a>
+                            <a href="/export/pdf/{{ scan.id }}" class="btn btn-outline">
+                                <i class="fas fa-file-pdf"></i> PDF
+                            </a>
+                            <button onclick="addBookmark({{ scan.id }})" class="btn btn-outline">
+                                <i class="fas fa-bookmark"></i> Bookmark
                             </button>
-                            <button type="submit" name="is_correct" value="false" class="btn btn-danger">
-                                <i class="fas fa-times"></i> Incorrect
-                            </button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        function addBookmark(scanId) {
+            fetch(`/bookmarks/${scanId}/add`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) alert(data.error);
+                    else alert('Added to bookmarks!');
+                });
+        }
+    </script>
 </body>
 </html>

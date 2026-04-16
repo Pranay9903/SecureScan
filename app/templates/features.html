@@ -5,10 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Features | SecureScan</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.css">
+    <script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
 </head>
 <body>
+    <div class="background-effects">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+    <div class="grid-overlay"></div>
+
     <nav class="navbar">
         <div class="container">
             <a href="{{ url_for('index') }}" class="logo">
@@ -16,9 +23,12 @@
                 <span>SecureScan</span>
             </a>
             <div class="nav-links">
-                <a href="{{ url_for('index') }}" >Home</a>
+                <a href="{{ url_for('index') }}">Home</a>
                 <a href="{{ url_for('features_page') }}">Features</a>
                 <a href="{{ url_for('about') }}">About</a>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
                 {% if current_user.is_authenticated %}
                     <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Dashboard</a>
                 {% else %}
@@ -26,113 +36,312 @@
                     <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
                 {% endif %}
             </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
     </nav>
 
-    <section style="padding: 80px 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-        <div class="container">
-            <h1 style="font-size: 48px; margin-bottom: 20px; text-align: center;">Powerful Features</h1>
-            <p style="font-size: 20px; text-align: center; color: rgba(255,255,255,0.9);">Everything you need to stay safe online</p>
+    <section style="padding: 160px 0 100px; position: relative;">
+        <div class="container" style="text-align: center;">
+            <div class="badge" style="margin-bottom: 30px;">
+                <i class="fas fa-cog"></i> Advanced Technology
+            </div>
+            <h1 style="font-size: 56px; margin-bottom: 25px; background: linear-gradient(135deg, var(--text-primary), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                Powerful Features
+            </h1>
+            <p style="font-size: 22px; color: var(--text-secondary); max-width: 600px; margin: 0 auto;">
+                Cutting-edge AI technology to protect you from phishing attacks
+            </p>
         </div>
     </section>
 
     <section style="padding: 80px 0;">
         <div class="container">
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 40px;">
-                <div class="feature-card" style="background: white; box-shadow: var(--shadow);">
-                    <div class="feature-icon"><i class="fas fa-link"></i></div>
-                    <h3>URL Lexical Analysis</h3>
-                    <p>Extracts 25+ features from URL structure including length, domain characteristics, special characters, and suspicious patterns.</p>
-                    <ul style="margin-top: 15px; padding-left: 20px; color: var(--gray);">
-                        <li>URL/Domain/Path length</li>
-                        <li>Count of dots, hyphens, underscores</li>
-                        <li>IP address detection</li>
-                        <li>HTTPS verification</li>
-                        <li>Parameter and subdomain analysis</li>
-                    </ul>
+            <div class="feature-circles">
+                <div class="feature-circle" onclick="document.getElementById('url-analysis').scrollIntoView({behavior: 'smooth'})">
+                    <div class="inner-ring"></div>
+                    <i class="fas fa-link"></i>
+                    <span>URL Analysis</span>
                 </div>
-                
-                <div class="feature-card" style="background: white; box-shadow: var(--shadow);">
-                    <div class="feature-icon"><i class="fas fa-code"></i></div>
-                    <h3>HTML Structural Features</h3>
-                    <p>Analyzes page HTML to detect malicious patterns like hidden forms, iframes, and external link redirects.</p>
-                    <ul style="margin-top: 15px; padding-left: 20px; color: var(--gray);">
-                        <li>Form analysis</li>
-                        <li>Hidden iframe detection</li>
-                        <li>Internal/External link ratio</li>
-                        <li>Cross-domain form actions</li>
-                        <li>Script tag analysis</li>
-                    </ul>
+                <div class="feature-circle" onclick="document.getElementById('html-analysis').scrollIntoView({behavior: 'smooth'})">
+                    <div class="inner-ring"></div>
+                    <i class="fas fa-code"></i>
+                    <span>HTML Scan</span>
                 </div>
-                
-                <div class="feature-card" style="background: white; box-shadow: var(--shadow);">
-                    <div class="feature-icon"><i class="fas fa-language"></i></div>
-                    <h3>NLP Semantic Features</h3>
-                    <p>Uses advanced NLP techniques to analyze page text content for urgency keywords and semantic patterns.</p>
-                    <ul style="margin-top: 15px; padding-left: 20px; color: var(--gray);">
-                        <li>TF-IDF vectors (50 dimensions)</li>
-                        <li>Word2Vec/GloVe embeddings</li>
-                        <li>BERT embeddings (768 dimensions)</li>
-                        <li>Urgency keyword detection</li>
-                        <li>Text sentiment analysis</li>
-                    </ul>
+                <div class="feature-circle" onclick="document.getElementById('nlp-analysis').scrollIntoView({behavior: 'smooth'})">
+                    <div class="inner-ring"></div>
+                    <i class="fas fa-brain"></i>
+                    <span>NLP Engine</span>
                 </div>
-                
-                <div class="feature-card" style="background: white; box-shadow: var(--shadow);">
-                    <div class="feature-icon"><i class="fas fa-layer-group"></i></div>
-                    <h3>Ensemble Stacking</h3>
-                    <p>Combines predictions from 4 different ML models using a meta-classifier for superior accuracy.</p>
-                    <ul style="margin-top: 15px; padding-left: 20px; color: var(--gray);">
-                        <li>Random Forest (100 trees)</li>
-                        <li>XGBoost</li>
-                        <li>Bidirectional LSTM</li>
-                        <li>Fine-tuned BERT</li>
-                        <li>Logistic Regression meta-classifier</li>
-                    </ul>
+                <div class="feature-circle" onclick="document.getElementById('ensemble').scrollIntoView({behavior: 'smooth'})">
+                    <div class="inner-ring"></div>
+                    <i class="fas fa-layer-group"></i>
+                    <span>Ensemble AI</span>
+                </div>
+                <div class="feature-circle" onclick="document.getElementById('api-section').scrollIntoView({behavior: 'smooth'})">
+                    <div class="inner-ring"></div>
+                    <i class="fas fa-plug"></i>
+                    <span>REST API</span>
+                </div>
+                <div class="feature-circle" onclick="window.location='/register'">
+                    <div class="inner-ring"></div>
+                    <i class="fas fa-rocket"></i>
+                    <span>Get Started</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <section style="padding: 80px 0; background: var(--light);">
+    <section id="url-analysis" style="padding: 80px 0;">
         <div class="container">
-            <h2 style="text-align: center; margin-bottom: 50px;">Model Architecture</h2>
-            <div style="background: white; padding: 40px; border-radius: 16px; box-shadow: var(--shadow);">
-                <pre style="font-family: monospace; font-size: 14px; line-height: 1.8; overflow-x: auto;">
-┌─────────────────────────────────────────────────────────────────┐
-│                    ENSEMBLE STACKING ARCHITECTURE                │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                  │
-│    ┌──────────────┐  ┌──────────────┐  ┌──────────────┐        │
-│    │   Random     │  │   XGBoost    │  │     LSTM     │        │
-│    │   Forest     │  │              │  │  (Sequential │        │
-│    │  n=100 trees │  │ lr=0.1       │  │   URL chars) │        │
-│    └──────┬───────┘  └──────┬───────┘  └──────┬───────┘        │
-│           │                 │                 │                  │
-│           └────────────────┼─────────────────┘                  │
-│                            ▼                                    │
-│                  ┌─────────────────┐                            │
-│                  │   Meta-Classifier │                           │
-│                  │ (Logistic Reg)    │                           │
-│                  └────────┬────────┘                            │
-│                           ▼                                     │
-│                  ┌─────────────────┐                            │
-│                  │  Final Prediction│                           │
-│                  │   (98%+ Accuracy)│                            │
-│                  └─────────────────┘                            │
-│                                                                  │
-└─────────────────────────────────────────────────────────────────┘
-                </pre>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center;">
+                <div>
+                    <div class="feature-card" style="padding: 0; background: transparent; border: none;">
+                        <div class="feature-icon" style="width: 100px; height: 100px;">
+                            <i class="fas fa-link"></i>
+                        </div>
+                        <h3 style="font-size: 32px; margin-bottom: 20px;">URL Lexical Analysis</h3>
+                        <p style="color: var(--text-secondary); font-size: 18px; margin-bottom: 25px;">
+                            Extracts 25+ features from URL structure including length, domain characteristics, special characters, and suspicious patterns.
+                        </p>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+                                <i class="fas fa-check-circle" style="color: var(--success); margin-right: 12px;"></i>
+                                URL/Domain/Path length analysis
+                            </li>
+                            <li style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+                                <i class="fas fa-check-circle" style="color: var(--success); margin-right: 12px;"></i>
+                                Count of dots, hyphens, underscores
+                            </li>
+                            <li style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+                                <i class="fas fa-check-circle" style="color: var(--success); margin-right: 12px;"></i>
+                                IP address detection
+                            </li>
+                            <li style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+                                <i class="fas fa-check-circle" style="color: var(--success); margin-right: 12px;"></i>
+                                HTTPS verification
+                            </li>
+                            <li style="padding: 12px 0;">
+                                <i class="fas fa-check-circle" style="color: var(--success); margin-right: 12px;"></i>
+                                Parameter and subdomain analysis
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: center;">
+                    <div style="width: 300px; height: 300px; position: relative;">
+                        <div style="position: absolute; inset: 0; border: 2px solid var(--primary); border-radius: 50%; animation: rotate-ring 8s linear infinite;"></div>
+                        <div style="position: absolute; inset: 30px; border: 2px solid var(--secondary); border-radius: 50%; animation: rotate-ring 6s linear infinite reverse;"></div>
+                        <div style="position: absolute; inset: 60px; border: 2px solid var(--accent); border-radius: 50%; animation: rotate-ring 4s linear infinite;"></div>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+                            <i class="fas fa-link" style="font-size: 48px; color: var(--primary);"></i>
+                            <p style="margin-top: 10px; color: var(--text-secondary);">25+ Features</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="html-analysis" style="padding: 80px 0;">
+        <div class="container">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 50px; align-items: center;">
+                <div style="display: flex; justify-content: center;">
+                    <div style="background: var(--card-bg); border-radius: 30px; padding: 40px; border: 1px solid var(--glass-border);">
+                        <div style="display: flex; gap: 20px; margin-bottom: 30px;">
+                            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 15px; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-code" style="font-size: 24px; color: white;"></i>
+                            </div>
+                            <div>
+                                <h4>HTML Analysis</h4>
+                                <p style="color: var(--text-secondary); font-size: 14px;">Detects malicious patterns</p>
+                            </div>
+                        </div>
+                        <div style="background: var(--glass); border-radius: 15px; padding: 20px; font-family: 'Courier New', monospace; font-size: 13px; color: var(--text-secondary);">
+                            &lt;form action="http://malicious..."&gt;<br>
+                            &nbsp;&nbsp;&lt;input type="hidden" ...&gt;<br>
+                            &nbsp;&nbsp;&lt;iframe hidden&gt;...&lt;/iframe&gt;<br>
+                            &nbsp;&nbsp;&lt;script&gt;stealData()&lt;/script&gt;
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="feature-card" style="padding: 0; background: transparent; border: none;">
+                        <div class="feature-icon" style="width: 100px; height: 100px;">
+                            <i class="fas fa-code"></i>
+                        </div>
+                        <h3 style="font-size: 32px; margin-bottom: 20px;">HTML Structural Features</h3>
+                        <p style="color: var(--text-secondary); font-size: 18px; margin-bottom: 25px;">
+                            Analyzes page HTML to detect malicious patterns like hidden forms, iframes, and external link redirects.
+                        </p>
+                        <ul style="list-style: none; padding: 0;">
+                            <li style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+                                <i class="fas fa-check-circle" style="color: var(--success); margin-right: 12px;"></i>
+                                Form analysis & detection
+                            </li>
+                            <li style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+                                <i class="fas fa-check-circle" style="color: var(--success); margin-right: 12px;"></i>
+                                Hidden iframe detection
+                            </li>
+                            <li style="padding: 12px 0; border-bottom: 1px solid var(--border);">
+                                <i class="fas fa-check-circle" style="color: var(--success); margin-right: 12px;"></i>
+                                Internal/External link ratio
+                            </li>
+                            <li style="padding: 12px 0;">
+                                <i class="fas fa-check-circle" style="color: var(--success); margin-right: 12px;"></i>
+                                Cross-domain form actions
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="nlp-analysis" style="padding: 80px 0;">
+        <div class="container">
+            <div class="section-header">
+                <h2>NLP Semantic Analysis</h2>
+                <p>Advanced natural language processing for text content</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-vector-square"></i></div>
+                    <h3>TF-IDF Vectors</h3>
+                    <p>50-dimensional feature vectors capturing term importance</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-project-diagram"></i></div>
+                    <h3>Word Embeddings</h3>
+                    <p>Word2Vec & GloVe for semantic similarity detection</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-network-wired"></i></div>
+                    <h3>BERT Embeddings</h3>
+                    <p>768-dimensional contextual embeddings for deep understanding</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                    <h3>Urgency Detection</h3>
+                    <p>Identifies panic-inducing keywords in phishing content</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="ensemble" style="padding: 80px 0;">
+        <div class="container">
+            <div class="section-header">
+                <h2>Ensemble Stacking Architecture</h2>
+                <p>Four powerful models combined for superior accuracy</p>
+            </div>
+            
+            <div style="display: flex; justify-content: center; align-items: center; gap: 30px; flex-wrap: wrap; margin-top: 50px;">
+                <div class="feature-card" style="text-align: center; padding: 40px;">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #22d3ee, #06b6d4); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                        <i class="fas fa-tree" style="font-size: 32px;"></i>
+                    </div>
+                    <h4>Random Forest</h4>
+                    <p style="color: var(--text-secondary); font-size: 14px;">100 decision trees</p>
+                </div>
+                
+                <i class="fas fa-plus" style="font-size: 24px; color: var(--primary);"></i>
+                
+                <div class="feature-card" style="text-align: center; padding: 40px;">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #a855f7, #7c3aed); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                        <i class="fas fa-cube" style="font-size: 32px;"></i>
+                    </div>
+                    <h4>XGBoost</h4>
+                    <p style="color: var(--text-secondary); font-size: 14px;">Gradient boosting</p>
+                </div>
+                
+                <i class="fas fa-plus" style="font-size: 24px; color: var(--primary);"></i>
+                
+                <div class="feature-card" style="text-align: center; padding: 40px;">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #f472b6, #db2777); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                        <i class="fas fa-brain" style="font-size: 32px;"></i>
+                    </div>
+                    <h4>Bi-LSTM</h4>
+                    <p style="color: var(--text-secondary); font-size: 14px;">Sequential learning</p>
+                </div>
+                
+                <i class="fas fa-plus" style="font-size: 24px; color: var(--primary);"></i>
+                
+                <div class="feature-card" style="text-align: center; padding: 40px;">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #fbbf24, #f59e0b); border-radius: 20px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                        <i class="fas fa-network-wired" style="font-size: 32px;"></i>
+                    </div>
+                    <h4>BERT</h4>
+                    <p style="color: var(--text-secondary); font-size: 14px;">Transformer model</p>
+                </div>
+                
+                <i class="fas fa-arrow-right" style="font-size: 24px; color: var(--primary);"></i>
+                
+                <div class="feature-card" style="text-align: center; padding: 40px; border-color: var(--primary);">
+                    <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; box-shadow: 0 0 40px var(--primary-glow);">
+                        <i class="fas fa-bullseye" style="font-size: 32px;"></i>
+                    </div>
+                    <h4>98%+ Accuracy</h4>
+                    <p style="color: var(--text-secondary); font-size: 14px;">Meta-classifier output</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="api-section" style="padding: 100px 0;">
+        <div class="container">
+            <div class="section-header">
+                <h2>Developer API</h2>
+                <p>Integrate phishing detection into your applications</p>
+            </div>
+            <div style="text-align: center; margin-top: 40px;">
+                <a href="{{ url_for('login') }}" class="btn btn-lg btn-primary">
+                    <i class="fas fa-plug"></i> Get API Access
+                </a>
             </div>
         </div>
     </section>
 
     <footer class="footer">
         <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="{{ url_for('index') }}" class="logo">
+                        <i class="fas fa-shield-halved"></i>
+                        <span>SecureScan</span>
+                    </a>
+                    <p>Advanced phishing detection powered by AI.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Product</h4>
+                    <a href="{{ url_for('features_page') }}">Features</a>
+                    <a href="{{ url_for('about') }}">About</a>
+                    <a href="#">Pricing</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Company</h4>
+                    <a href="#">Team</a>
+                    <a href="#">Blog</a>
+                    <a href="#">Contact</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Legal</h4>
+                    <a href="#">Privacy</a>
+                    <a href="#">Terms</a>
+                </div>
+            </div>
             <div class="footer-bottom">
                 <p>&copy; 2024 SecureScan. All rights reserved.</p>
             </div>
         </div>
     </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        function toggleMobileMenu() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        }
+    </script>
 </body>
 </html>

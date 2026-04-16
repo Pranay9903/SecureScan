@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | SecureScan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.css">
+    <script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <div class="container">
+                <a href="{{ url_for('index') }}" class="logo">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>SecureScan</span>
+                </a>
+                
+                <div class="nav-links">
+                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('history') }}">History</a>
+                    <a href="{{ url_for('api_keys') }}">API Keys</a>
+                    <a href="{{ url_for('profile') }}" class="active">Profile</a>
+                    <div class="user-info">
+                        <div class="user-avatar">{{ current_user.username[0]|upper }}</div>
+                        <span>{{ current_user.username }}</span>
+                        {% if current_user.is_admin %}
+                            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline" style="margin-left: 10px;">Admin</a>
+                        {% endif %}
+                        <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="container">
+                <h2 style="margin-bottom: 30px;">Profile Settings</h2>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div class="section-card">
+                        <h3>Account Information</h3>
+                        <form method="POST">
+                            <div class="form-group">
+                                <label for="username">Username</label>
+                                <input type="text" id="username" name="username" value="{{ current_user.username }}" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="email">Email</label>
+                                <input type="email" id="email" name="email" value="{{ current_user.email }}" required>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Save Changes
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <div class="section-card">
+                        <h3>Change Password</h3>
+                        <form method="POST">
+                            <div class="form-group">
+                                <label for="new_password">New Password</label>
+                                <input type="password" id="new_password" name="new_password" placeholder="Enter new password (min 8 chars)">
+                                <small style="color: var(--gray);">Min 8 chars, include letters, numbers & special chars</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="confirm_password">Confirm Password</label>
+                                <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm new password">
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-lock"></i> Update Password
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="section-card" style="margin-top: 20px;">
+                    <h3>Account Statistics</h3>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 15px;">
+                        <div class="stat-card">
+                            <h3>Total Scans</h3>
+                            <div class="value">{{ scans_count }}</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Member Since</h3>
+                            <div class="value" style="font-size: 18px;">{{ current_user.created_at.strftime('%Y-%m-%d') }}</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Last Login</h3>
+                            <div class="value" style="font-size: 18px;">{{ current_user.last_login.strftime('%Y-%m-%d %H:%M') if current_user.last_login else 'N/A' }}</div>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Account Type</h3>
+                            <div class="value" style="font-size: 18px;">{% if current_user.is_admin %}Admin{% else %}User{% endif %}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section-card" style="margin-top: 20px;">
+                    <h3>Danger Zone</h3>
+                    <p style="color: var(--gray); margin-bottom: 15px;">Once you delete your account, there is no going back.</p>
+                    <button class="btn btn-danger" onclick="confirmDeleteAccount()">
+                        <i class="fas fa-trash"></i> Delete Account
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        function confirmDeleteAccount() {
+            if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
+                fetch('/account/delete', { method: 'POST' })
+                    .then(() => window.location.href = '/');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -5,35 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Scan History | SecureScan</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.css">
+    <script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
 </head>
 <body>
+    <div class="background-effects">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
     <div class="dashboard">
-        <div class="dashboard-header">
+        <div class="navbar" style="position: fixed; top: 0; z-index: 1001;">
             <div class="container">
                 <a href="{{ url_for('index') }}" class="logo">
                     <i class="fas fa-shield-halved"></i>
                     <span>SecureScan</span>
                 </a>
+                
                 <div class="nav-links">
                     <a href="{{ url_for('dashboard') }}">Dashboard</a>
                     <a href="{{ url_for('history') }}" class="active">History</a>
                     <a href="{{ url_for('api_keys') }}">API Keys</a>
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
                     <div class="user-info">
                         <div class="user-avatar">{{ current_user.username[0]|upper }}</div>
                         <span>{{ current_user.username }}</span>
-                        <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
                     </div>
+                    {% if current_user.is_admin %}
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">Admin</a>
+                    {% endif %}
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
                 </div>
             </div>
         </div>
         
-        <div class="dashboard-content">
+        <div class="dashboard-content" style="padding-top: 120px;">
             <div class="container">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
-                    <h2>Scan History</h2>
-                    <button class="btn btn-outline" onclick="exportToCSV()">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 40px;">
+                    <h2 style="font-size: 36px;">
+                        <i class="fas fa-history" style="color: var(--primary);"></i>
+                        Scan History
+                    </h2>
+                    <button class="btn btn-primary" onclick="exportToCSV()">
                         <i class="fas fa-download"></i> Export CSV
                     </button>
                 </div>
@@ -48,7 +64,7 @@
                                 <th>Confidence</th>
                                 <th>Type</th>
                                 <th>Date</th>
-                                <th>Action</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -63,20 +79,41 @@
                                 <td>{{ (scan.confidence * 100)|round(1) }}%</td>
                                 <td>{{ scan.scan_type }}</td>
                                 <td>{{ scan.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
-                                <td><a href="{{ url_for('scan_detail', scan_id=scan.id) }}" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;">View</a></td>
+                                <td>
+                                    <a href="{{ url_for('scan_detail', scan_id=scan.id) }}" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; margin-right: 5px;">View</a>
+                                    <button class="btn btn-outline" onclick="addBookmark({{ scan.id }})" style="padding: 6px 10px; font-size: 12px;" title="Bookmark">
+                                        <i class="fas fa-bookmark"></i>
+                                    </button>
+                                </td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                     {% else %}
-                    <p style="text-align: center; color: var(--gray); padding: 60px;">
-                        <i class="fas fa-history" style="font-size: 50px; margin-bottom: 15px; display: block; opacity: 0.5;"></i>
-                        No scan history yet
-                    </p>
+                    <div style="text-align: center; padding: 60px; color: var(--text-secondary);">
+                        <i class="fas fa-history" style="font-size: 60px; margin-bottom: 20px; opacity: 0.3;"></i>
+                        <h3>No scan history yet</h3>
+                        <p style="margin-top: 10px;">Start scanning URLs to see them here!</p>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-primary" style="margin-top: 20px;">
+                            <i class="fas fa-radar"></i> Start Scanning
+                        </a>
+                    </div>
                     {% endif %}
                 </div>
             </div>
         </div>
     </div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        function addBookmark(scanId) {
+            fetch(`/bookmarks/${scanId}/add`, { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) alert(data.error);
+                    else alert('Added to bookmarks!');
+                });
+        }
+    </script>
 </body>
 </html>

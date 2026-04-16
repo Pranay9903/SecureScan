@@ -140,6 +140,18 @@ class ApiKey(db.Model):
     user = db.relationship('User', backref='api_keys')
 
 
+class Bookmark(db.Model):
+    __tablename__ = 'bookmarks'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    scan_id = db.Column(db.Integer, db.ForeignKey('scan_history.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    scan = db.relationship('ScanHistory', backref='bookmarks')
+    user = db.relationship('User', backref='bookmarks')
+
+
 def init_db(app):
     with app.app_context():
         db.create_all()

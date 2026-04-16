@@ -3,7 +3,64 @@
 document.addEventListener('DOMContentLoaded', function() {
     initAlerts();
     initTooltips();
+    initTheme();
 });
+
+function initTheme() {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+    } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+    }
+    updateThemeIcon();
+}
+
+function updateThemeIcon() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.querySelectorAll('.theme-toggle i').forEach(icon => {
+        icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+    });
+}
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+    updateThemeIcon();
+}
+
+function validateUrlInput(url) {
+    if (!url || url.trim() === '') {
+        return { valid: false, message: 'Please enter a URL' };
+    }
+    
+    if (url.length > 2048) {
+        return { valid: false, message: 'URL is too long (max 2048 characters)' };
+    }
+    
+    let processedUrl = url.trim();
+    if (!processedUrl.startsWith('http://') && !processedUrl.startsWith('https://')) {
+        processedUrl = 'https://' + processedUrl;
+    }
+    
+    try {
+        const parsed = new URL(processedUrl);
+        if (!parsed.hostname) {
+            return { valid: false, message: 'Invalid URL format' };
+        }
+        
+        const localhostPatterns = ['localhost', '127.0.0.1', '0.0.0.0', '::1'];
+        if (localhostPatterns.some(p => parsed.hostname.includes(p))) {
+            return { valid: false, message: 'Localhost URLs are not allowed' };
+        }
+        
+        return { valid: true, url: processedUrl };
+    } catch (e) {
+        return { valid: false, message: 'Invalid URL format' };
+    }
+}
 
 function initAlerts() {
     const alerts = document.querySelectorAll('.alert');

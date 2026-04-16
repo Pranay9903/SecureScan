@@ -5,13 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | SecureScan</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
 </head>
 <body>
+    <div class="background-effects">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
     <div class="dashboard">
-        <div class="dashboard-header">
+        <div class="navbar" style="position: fixed; top: 0; z-index: 1001;">
             <div class="container">
                 <a href="{{ url_for('index') }}" class="logo">
                     <i class="fas fa-shield-halved"></i>
@@ -22,84 +28,104 @@
                     <a href="{{ url_for('dashboard') }}" class="active">Dashboard</a>
                     <a href="{{ url_for('history') }}">History</a>
                     <a href="{{ url_for('api_keys') }}">API Keys</a>
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
                     <div class="user-info">
                         <div class="user-avatar">{{ current_user.username[0]|upper }}</div>
                         <span>{{ current_user.username }}</span>
-                        {% if current_user.is_admin %}
-                            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline" style="margin-left: 10px;">Admin</a>
-                        {% endif %}
-                        <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
                     </div>
+                    {% if current_user.is_admin %}
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">Admin</a>
+                    {% endif %}
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
                 </div>
             </div>
         </div>
         
-        <div class="dashboard-content">
+        <div class="dashboard-content" style="padding-top: 120px;">
             <div class="container">
-                <h2 style="margin-bottom: 30px;">Welcome back, {{ current_user.username }}!</h2>
+                <h2 style="margin-bottom: 40px; font-size: 36px;">
+                    <i class="fas fa-robot" style="color: var(--primary);"></i>
+                    Welcome, {{ current_user.username }}!
+                </h2>
                 
                 <div class="stats-grid">
                     <div class="stat-card primary">
-                        <h3>Total Scans</h3>
+                        <h3><i class="fas fa-radar"></i> Total Scans</h3>
                         <div class="value" id="totalScans">{{ stats.total }}</div>
                     </div>
                     <div class="stat-card danger">
-                        <h3>Phishing Detected</h3>
+                        <h3><i class="fas fa-skull"></i> Phishing Detected</h3>
                         <div class="value" id="phishingCount">{{ stats.phishing }}</div>
                     </div>
                     <div class="stat-card success">
-                        <h3>Safe URLs</h3>
+                        <h3><i class="fas fa-shield-alt"></i> Safe URLs</h3>
                         <div class="value" id="safeCount">{{ stats.safe }}</div>
                     </div>
                     <div class="stat-card">
-                        <h3>Detection Rate</h3>
+                        <h3><i class="fas fa-bullseye"></i> Detection Rate</h3>
                         <div class="value">{{ stats.accuracy }}%</div>
                     </div>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-bottom: 30px;">
                     <div class="section-card">
-                        <h3>Detection Overview</h3>
-                        <canvas id="pieChart" style="max-height: 250px;"></canvas>
+                        <h3><i class="fas fa-chart-pie" style="color: var(--primary);"></i> Detection Overview</h3>
+                        <canvas id="pieChart" style="max-height: 220px;"></canvas>
                     </div>
                     <div class="section-card">
-                        <h3>Confidence Analysis</h3>
-                        <canvas id="barChart" style="max-height: 250px;"></canvas>
+                        <h3><i class="fas fa-chart-bar" style="color: var(--secondary);"></i> Confidence Analysis</h3>
+                        <canvas id="barChart" style="max-height: 220px;"></canvas>
                     </div>
                 </div>
                 
                 <div class="section-card">
-                    <h3>Quick Scan</h3>
-                    <div class="form-group" style="display: flex; gap: 10px;">
-                        <input type="text" id="urlInput" placeholder="Enter URL to scan..." style="flex: 1; padding: 14px 16px;">
+                    <h3><i class="fas fa-radar" style="color: var(--primary);"></i> Quick Scan</h3>
+                    <div class="scan-type-tabs">
+                        <button class="tab active" onclick="setScanType('quick')">Quick Scan</button>
+                        <button class="tab" onclick="setScanType('detailed')">Detailed Analysis</button>
+                    </div>
+                    <div class="url-input-wrapper">
+                        <input type="text" id="urlInput" placeholder="Enter URL to scan..." onkeypress="if(event.key==='Enter')quickScan()">
                         <button class="btn btn-primary" onclick="quickScan()">
-                            <i class="fas fa-search"></i> Scan
+                            <i class="fas fa-radar"></i> Scan
                         </button>
                     </div>
-                    <div id="quickResult" style="margin-top: 20px;"></div>
+                    <div id="quickResult" style="margin-top: 25px;"></div>
                 </div>
                 
                 <div class="section-card" id="analysisSection" style="display: none;">
-                    <h3>Analysis Results</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <h3><i class="fas fa-microscope" style="color: var(--accent);"></i> Analysis Results</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
                         <div>
-                            <h4 style="margin-bottom: 15px;">URL Risk Score</h4>
-                            <canvas id="gaugeChart" style="max-height: 200px;"></canvas>
+                            <h4 style="margin-bottom: 15px; color: var(--text-secondary);">URL Risk Score</h4>
+                            <canvas id="gaugeChart" style="max-height: 180px;"></canvas>
                         </div>
                         <div>
-                            <h4 style="margin-bottom: 15px;">Feature Analysis</h4>
-                            <canvas id="radarChart" style="max-height: 200px;"></canvas>
+                            <h4 style="margin-bottom: 15px; color: var(--text-secondary);">Feature Analysis</h4>
+                            <canvas id="radarChart" style="max-height: 180px;"></canvas>
                         </div>
                     </div>
-                    <div style="margin-top: 20px;">
-                        <h4 style="margin-bottom: 15px;">Model Predictions</h4>
-                        <canvas id="modelChart" style="max-height: 150px;"></canvas>
+                    <div style="margin-top: 25px;">
+                        <h4 style="margin-bottom: 15px; color: var(--text-secondary);">Model Predictions</h4>
+                        <canvas id="modelChart" style="max-height: 140px;"></canvas>
                     </div>
                 </div>
                 
                 <div class="section-card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h3>Recent Scans</h3>
+                    <h3><i class="fas fa-layer-group" style="color: var(--secondary);"></i> Batch URL Scanner</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 20px;">Scan multiple URLs at once (max 50 URLs, one per line)</p>
+                    <textarea id="batchUrls" class="batch-url-input" placeholder="https://example1.com&#10;https://example2.com&#10;https://example3.com"></textarea>
+                    <button class="btn btn-primary" onclick="runBatchScan()" style="margin-top: 15px;">
+                        <i class="fas fa-layer-group"></i> Scan All URLs
+                    </button>
+                    <div id="batchResults" class="batch-results"></div>
+                </div>
+                
+                <div class="section-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                        <h3><i class="fas fa-history" style="color: var(--success);"></i> Recent Scans</h3>
                         <a href="{{ url_for('history') }}" class="btn btn-outline">View All</a>
                     </div>
                     
@@ -117,7 +143,7 @@
                         <tbody id="scansTableBody">
                             {% for scan in scans %}
                             <tr>
-                                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">{{ scan.url }}</td>
+                                <td style="max-width: 280px; overflow: hidden; text-overflow: ellipsis;">{{ scan.url }}</td>
                                 <td>
                                     <span class="status-badge {{ 'status-safe' if scan.prediction == 'Safe' else 'status-phishing' }}">
                                         {{ scan.prediction }}
@@ -131,32 +157,27 @@
                         </tbody>
                     </table>
                     {% else %}
-                    <p style="text-align: center; color: var(--gray); padding: 40px;">
-                        <i class="fas fa-search" style="font-size: 40px; margin-bottom: 10px; display: block; opacity: 0.5;"></i>
-                        No scans yet. Start by scanning your first URL!
-                    </p>
-                    {% endif %}
-                </div>
-                
-                <div class="section-card">
-                    <h3>Detailed Analysis</h3>
-                    <p style="color: var(--gray); margin-bottom: 20px;">Get deeper insights by analyzing HTML content, forms, and scripts</p>
-                    <div class="form-group" style="display: flex; gap: 10px;">
-                        <input type="text" id="detailedUrlInput" placeholder="Enter URL for detailed analysis..." style="flex: 1; padding: 14px 16px;">
-                        <button class="btn btn-primary" onclick="detailedScan()">
-                            <i class="fas fa-microscope"></i> Analyze
-                        </button>
+                    <div style="text-align: center; padding: 50px; color: var(--text-secondary);">
+                        <i class="fas fa-search" style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;"></i>
+                        <p>No scans yet. Start by scanning your first URL!</p>
                     </div>
-                    <div id="detailedResult" style="margin-top: 20px;"></div>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </div>
     
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
+        let scanType = 'quick';
         let pieChart, barChart, gaugeChart, radarChart, modelChart;
         
-        // Initialize charts
+        function setScanType(type) {
+            scanType = type;
+            document.querySelectorAll('.scan-type-tabs .tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        
         function initCharts() {
             const pieCtx = document.getElementById('pieChart').getContext('2d');
             pieChart = new Chart(pieCtx, {
@@ -165,14 +186,15 @@
                     labels: ['Safe', 'Phishing'],
                     datasets: [{
                         data: [{{ stats.safe }}, {{ stats.phishing }}],
-                        backgroundColor: ['#10b981', '#ef4444'],
-                        borderWidth: 0
+                        backgroundColor: ['#22d3ee', '#f43f5e'],
+                        borderWidth: 0,
+                        hoverOffset: 10
                     }]
                 },
                 options: {
                     responsive: true,
                     plugins: {
-                        legend: { position: 'bottom' }
+                        legend: { position: 'bottom', labels: { color: '#a1a1aa', padding: 20 } }
                     }
                 }
             });
@@ -185,12 +207,13 @@
                     datasets: [{
                         label: 'Scans',
                         data: [0, 0, 0],
-                        backgroundColor: ['#ef4444', '#f59e0b', '#10b981']
+                        backgroundColor: ['#f43f5e', '#fbbf24', '#22d3ee'],
+                        borderRadius: 8
                     }]
                 },
                 options: {
                     responsive: true,
-                    scales: { y: { beginAtZero: true } }
+                    scales: { y: { beginAtZero: true, ticks: { color: '#a1a1aa' } }, x: { ticks: { color: '#a1a1aa' } } }
                 }
             });
         }
@@ -213,24 +236,31 @@
             phishingEl.textContent = phishing;
             safeEl.textContent = safe;
             
-            // Update pie chart
             pieChart.data.datasets[0].data = [safe, phishing];
             pieChart.update();
         }
         
         async function quickScan() {
-            const url = document.getElementById('urlInput').value;
+            const urlInput = document.getElementById('urlInput');
+            const url = urlInput.value;
             if (!url) return;
+            
+            const validation = validateUrlInput(url);
+            if (!validation.valid) {
+                document.getElementById('quickResult').innerHTML = `<div class="alert alert-error">${validation.message}</div>`;
+                return;
+            }
             
             const resultDiv = document.getElementById('quickResult');
             const analysisSection = document.getElementById('analysisSection');
             resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Analyzing URL...</p></div>';
             
             try {
-                const response = await fetch('/detect', {
+                const endpoint = scanType === 'quick' ? '/detect' : '/analyze';
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({url: url})
+                    body: JSON.stringify({url: url, scan_type: scanType})
                 });
                 const data = await response.json();
                 
@@ -239,27 +269,27 @@
                     const confidence = data.confidence * 100;
                     
                     resultDiv.innerHTML = `
-                        <div class="result-card ${isSafe ? 'safe' : 'phishing'}" style="padding: 20px; border-radius: 12px; margin-top: 20px;">
-                            <div style="display: flex; align-items: center; gap: 15px;">
-                                <i class="fas fa-${isSafe ? 'check-circle' : 'exclamation-triangle'}" style="font-size: 32px;"></i>
+                        <div class="result-card ${isSafe ? 'safe' : 'phishing'}" style="padding: 25px; border-radius: 20px; margin-top: 20px;">
+                            <div style="display: flex; align-items: center; gap: 20px;">
+                                <i class="fas fa-${isSafe ? 'check-circle' : 'exclamation-triangle'}" style="font-size: 36px;"></i>
                                 <div>
-                                    <h4 style="font-size: 20px;">${data.prediction}</h4>
+                                    <h4 style="font-size: 22px;">${data.prediction}</h4>
                                     <p>Confidence: ${confidence.toFixed(1)}%</p>
                                 </div>
                             </div>
                             ${data.url_features ? `
-                                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.2);">
-                                    <small>URL Features: ${data.url_features.url_length} chars | HTTPS: ${data.url_features.has_https ? 'Yes' : 'No'} | Suspicious TLD: ${data.url_features.suspicious_tld ? 'Yes' : 'No'}</small>
+                                <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.1);">
+                                    <small style="color: var(--text-secondary);">
+                                        Length: ${data.url_features.url_length} | HTTPS: ${data.url_features.has_https ? 'Yes' : 'No'} | Suspicious TLD: ${data.url_features.suspicious_tld ? 'Yes' : 'No'}
+                                    </small>
                                 </div>
                             ` : ''}
                         </div>
                     `;
                     
-                    // Show analysis section with charts
                     analysisSection.style.display = 'block';
                     updateCharts(data, isSafe);
                     
-                    // Update stats if scan was saved to database
                     if (data.scan_saved) {
                         updateStatsAfterScan(!isSafe);
                         addRecentScan(url, data.prediction, confidence);
@@ -275,7 +305,6 @@
         function updateCharts(data, isSafe) {
             const confidence = data.confidence * 100;
             
-            // Gauge Chart
             const gaugeCtx = document.getElementById('gaugeChart').getContext('2d');
             if (gaugeChart) gaugeChart.destroy();
             gaugeChart = new Chart(gaugeCtx, {
@@ -284,7 +313,7 @@
                     labels: ['Risk', 'Safe'],
                     datasets: [{
                         data: [isSafe ? 100 - confidence : confidence, isSafe ? confidence : 100 - confidence],
-                        backgroundColor: [isSafe ? '#ef4444' : '#10b981', '#e2e8f0'],
+                        backgroundColor: [isSafe ? '#f43f5e' : '#22d3ee', '#27272a'],
                         borderWidth: 0
                     }]
                 },
@@ -292,21 +321,17 @@
                     circumference: 270,
                     rotation: 225,
                     responsive: true,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: { enabled: false }
-                    }
+                    plugins: { legend: { display: false }, tooltip: { enabled: false } }
                 }
             });
             
-            // Radar Chart for URL features
             const radarCtx = document.getElementById('radarChart').getContext('2d');
             if (radarChart) radarChart.destroy();
             const features = data.url_features || {};
             radarChart = new Chart(radarCtx, {
                 type: 'radar',
                 data: {
-                    labels: ['Length', 'Dots', 'Hyphens', 'Special Chars', 'Subdomains', 'Urgency'],
+                    labels: ['Length', 'Dots', 'Hyphens', 'Special', 'Subdomains', 'Urgency'],
                     datasets: [{
                         label: 'Feature Values',
                         data: [
@@ -317,9 +342,9 @@
                             Math.min((features.num_subdomains || 0) / 5 * 100, 100),
                             (features.urgency_score || 0) * 20
                         ],
-                        backgroundColor: 'rgba(99, 102, 241, 0.2)',
-                        borderColor: '#6366f1',
-                        pointBackgroundColor: '#6366f1'
+                        backgroundColor: 'rgba(0, 212, 255, 0.2)',
+                        borderColor: '#00d4ff',
+                        pointBackgroundColor: '#00d4ff'
                     }]
                 },
                 options: {
@@ -327,13 +352,15 @@
                     scales: {
                         r: {
                             beginAtZero: true,
-                            max: 100
+                            max: 100,
+                            ticks: { display: false },
+                            grid: { color: 'rgba(255,255,255,0.1)' },
+                            pointLabels: { color: '#a1a1aa' }
                         }
                     }
                 }
             });
             
-            // Model Predictions Chart
             const modelCtx = document.getElementById('modelChart').getContext('2d');
             if (modelChart) modelChart.destroy();
             const predictions = data.individual_predictions || {};
@@ -348,21 +375,18 @@
                         datasets: [{
                             label: 'Phishing Probability',
                             data: modelProbs,
-                            backgroundColor: modelProbs.map(p => p > 50 ? '#ef4444' : '#10b981'),
+                            backgroundColor: modelProbs.map(p => p > 50 ? '#f43f5e' : '#22d3ee'),
                             borderRadius: 6
                         }]
                     },
                     options: {
                         responsive: true,
                         indexAxis: 'y',
-                        scales: {
-                            x: { beginAtZero: true, max: 100 }
-                        }
+                        scales: { x: { beginAtZero: true, max: 100, ticks: { color: '#a1a1aa' } } }
                     }
                 });
             }
             
-            // Update bar chart for confidence distribution
             let highCount = 0, medCount = 0, lowCount = 0;
             if (confidence > 80) highCount++;
             else if (confidence > 50) medCount++;
@@ -381,12 +405,8 @@
             
             const newRow = document.createElement('tr');
             newRow.innerHTML = `
-                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">${url}</td>
-                <td>
-                    <span class="status-badge ${prediction === 'Safe' ? 'status-safe' : 'status-phishing'}">
-                        ${prediction}
-                    </span>
-                </td>
+                <td style="max-width: 280px; overflow: hidden; text-overflow: ellipsis;">${url}</td>
+                <td><span class="status-badge ${prediction === 'Safe' ? 'status-safe' : 'status-phishing'}">${prediction}</span></td>
                 <td>${confidence.toFixed(1)}%</td>
                 <td>${dateStr}</td>
                 <td><button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;">View</button></td>
@@ -395,46 +415,42 @@
             tbody.insertBefore(newRow, tbody.firstChild);
         }
         
-        async function detailedScan() {
-            const url = document.getElementById('detailedUrlInput').value;
-            if (!url) return;
+        async function runBatchScan() {
+            const textarea = document.getElementById('batchUrls');
+            const urls = textarea.value.split('\n').filter(u => u.trim());
             
-            const resultDiv = document.getElementById('detailedResult');
-            resultDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Performing detailed analysis (this may take longer)...</p></div>';
+            if (urls.length === 0) {
+                alert('Please enter at least one URL');
+                return;
+            }
+            
+            if (urls.length > 50) {
+                alert('Maximum 50 URLs allowed');
+                return;
+            }
+            
+            const resultsDiv = document.getElementById('batchResults');
+            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Scanning URLs...</p></div>';
             
             try {
-                const response = await fetch('/analyze', {
+                const response = await fetch('/batch-scan', {
                     method: 'POST',
                     headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({url: url, scan_type: 'detailed'})
+                    body: JSON.stringify({urls: urls})
                 });
                 const data = await response.json();
                 
-                if (data.prediction) {
-                    const isSafe = data.prediction === 'Safe';
-                    const confidence = data.confidence * 100;
-                    
-                    resultDiv.innerHTML = `
-                        <div class="result-card ${isSafe ? 'safe' : 'phishing'}" style="padding: 20px; border-radius: 12px; margin-top: 20px;">
-                            <div style="display: flex; align-items: center; gap: 15px;">
-                                <i class="fas fa-${isSafe ? 'check-circle' : 'exclamation-triangle'}" style="font-size: 32px;"></i>
-                                <div>
-                                    <h4 style="font-size: 20px;">${data.prediction}</h4>
-                                    <p>Confidence: ${confidence.toFixed(1)}%</p>
-                                </div>
-                            </div>
+                if (data.results) {
+                    resultsDiv.innerHTML = data.results.map(r => `
+                        <div class="batch-result-item">
+                            <span class="url" title="${r.url}">${r.url}</span>
+                            <span class="status ${r.prediction === 'Safe' ? 'safe' : 'phishing'}">${r.prediction}</span>
+                            ${r.confidence ? '<span style="margin-left:10px;font-size:12px;color:var(--text-secondary);">' + (r.confidence * 100).toFixed(1) + '%</span>' : ''}
                         </div>
-                    `;
-                    
-                    if (data.scan_saved) {
-                        updateStatsAfterScan(!isSafe);
-                        addRecentScan(url, data.prediction, confidence);
-                    }
-                } else {
-                    resultDiv.innerHTML = `<div class="alert alert-error">${data.error || 'Error analyzing URL'}</div>`;
+                    `).join('');
                 }
             } catch (e) {
-                resultDiv.innerHTML = '<div class="alert alert-error">Connection error</div>';
+                resultsDiv.innerHTML = '<div class="alert alert-error">Error processing batch scan</div>';
             }
         }
     </script>

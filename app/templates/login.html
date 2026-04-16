@@ -5,18 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | SecureScan</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.css">
+    <script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
 </head>
 <body>
+    <div class="background-effects">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+    <div class="grid-overlay"></div>
+
     <div class="auth-page">
         <div class="auth-card">
-            <a href="{{ url_for('index') }}" class="logo" style="justify-content: center; margin-bottom: 20px;">
-                <i class="fas fa-shield-halved"></i>
-                <span>SecureScan</span>
-            </a>
+            <div style="text-align: center; margin-bottom: 30px;">
+                <div style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 20px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 20px; box-shadow: 0 15px 40px var(--primary-glow);">
+                    <i class="fas fa-shield-halved" style="font-size: 36px; color: white;"></i>
+                </div>
+                <a href="{{ url_for('index') }}" class="logo" style="justify-content: center; font-size: 28px;">
+                    <span>SecureScan</span>
+                </a>
+            </div>
+            
             <h2>Welcome Back</h2>
-            <p class="subtitle">Sign in to access your dashboard</p>
+            <p class="subtitle">Enter the secure zone</p>
             
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
@@ -28,21 +40,36 @@
             
             <form method="POST">
                 <div class="form-group">
-                    <label for="username">Username</label>
+                    <label for="username">
+                        <i class="fas fa-user"></i> Username
+                    </label>
                     <input type="text" id="username" name="username" required placeholder="Enter your username">
                 </div>
                 
                 <div class="form-group">
-                    <label for="password">Password</label>
+                    <label for="password">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
                     <input type="password" id="password" name="password" required placeholder="Enter your password">
                 </div>
                 
+                <div class="form-group" style="display: flex; align-items: center; gap: 12px;">
+                    <input type="checkbox" id="remember" name="remember" style="width: 20px; height: 20px; accent-color: var(--primary);">
+                    <label for="remember" style="margin: 0; color: var(--text-secondary);">Remember me</label>
+                </div>
+                
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-sign-in-alt"></i> Sign In
+                    <i class="fas fa-sign-in-alt"></i> Access Portal
                 </button>
             </form>
             
             <p class="alt-link">Don't have an account? <a href="{{ url_for('register') }}">Create one</a></p>
+            
+            <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border);">
+                <button class="theme-toggle" onclick="if(document.documentElement.getAttribute('data-theme')==='dark'){document.documentElement.removeAttribute('data-theme');localStorage.setItem('theme','light')}else{document.documentElement.setAttribute('data-theme','dark');localStorage.setItem('theme','dark')}" style="width: 50px; height: 50px; border-radius: 50%;">
+                    <i class="fas fa-moon"></i>
+                </button>
+            </div>
         </div>
     </div>
 </body>
