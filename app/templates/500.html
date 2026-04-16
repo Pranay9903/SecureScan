@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>500 - Server Error | SecureScan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css-all.min.css">
+</head>
+<body style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--light);">
+    <div style="text-align: center; padding: 40px;">
+        <i class="fas fa-server" style="font-size: 80px; color: var(--danger); margin-bottom: 20px;"></i>
+        <h1 style="font-size: 48px; margin-bottom: 10px;">500</h1>
+        <h2 style="font-size: 24px; margin-bottom: 20px;">Server Error</h2>
+        <p style="color: var(--gray); margin-bottom: 30px;">Something went wrong on our end. Please try again later.</p>
+        <a href="{{ url_for('index') }}" class="btn btn-primary">
+            <i class="fas fa-home"></i> Go Home
+        </a>
+    </div>
+</body>
+</html>

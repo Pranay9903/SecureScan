@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Feedback | SecureScan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <div class="container">
+                <a href="{{ url_for('index') }}" class="logo">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>SecureScan</span>
+                </a>
+                <div class="nav-links">
+                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('admin_dashboard') }}">Admin</a>
+                    <div class="user-info">
+                        <span>{{ current_user.username }}</span>
+                        <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="container">
+                <h2 style="margin-bottom: 30px;">User Feedback</h2>
+                
+                <div class="admin-nav">
+                    <a href="{{ url_for('admin_dashboard') }}">Overview</a>
+                    <a href="{{ url_for('admin_users') }}">Users</a>
+                    <a href="{{ url_for('admin_scans') }}">Scans</a>
+                    <a href="{{ url_for('admin_feedback') }}" class="active">Feedback</a>
+                </div>
+                
+                <div class="section-card">
+                    {% if feedbacks %}
+                    <table class="scans-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User</th>
+                                <th>Scan URL</th>
+                                <th>Correct?</th>
+                                <th>Comment</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fb in feedbacks %}
+                            <tr>
+                                <td>{{ fb.id }}</td>
+                                <td>{{ fb.user.username if fb.user else 'Anonymous' }}</td>
+                                <td style="max-width: 150px; overflow: hidden; text-overflow: ellipsis;">{{ fb.scan.url if fb.scan else 'N/A' }}</td>
+                                <td>
+                                    <span class="status-badge {{ 'status-safe' if fb.is_correct else 'status-phishing' }}">
+                                        {{ 'Correct' if fb.is_correct else 'Incorrect' if fb.is_correct is not none else 'Unknown' }}
+                                    </span>
+                                </td>
+                                <td>{{ fb.comment or 'No comment' }}</td>
+                                <td>{{ fb.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p style="text-align: center; color: var(--gray); padding: 40px;">No feedback yet</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

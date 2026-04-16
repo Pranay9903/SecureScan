@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scan History | SecureScan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <div class="container">
+                <a href="{{ url_for('index') }}" class="logo">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>SecureScan</span>
+                </a>
+                <div class="nav-links">
+                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('history') }}" class="active">History</a>
+                    <a href="{{ url_for('api_keys') }}">API Keys</a>
+                    <div class="user-info">
+                        <div class="user-avatar">{{ current_user.username[0]|upper }}</div>
+                        <span>{{ current_user.username }}</span>
+                        <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="container">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                    <h2>Scan History</h2>
+                    <button class="btn btn-outline" onclick="exportToCSV()">
+                        <i class="fas fa-download"></i> Export CSV
+                    </button>
+                </div>
+                
+                <div class="section-card">
+                    {% if scans %}
+                    <table class="scans-table">
+                        <thead>
+                            <tr>
+                                <th>URL</th>
+                                <th>Prediction</th>
+                                <th>Confidence</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for scan in scans %}
+                            <tr class="scan-row" data-status="{{ scan.prediction|lower }}">
+                                <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis;">{{ scan.url }}</td>
+                                <td>
+                                    <span class="status-badge {{ 'status-safe' if scan.prediction == 'Safe' else 'status-phishing' }}">
+                                        {{ scan.prediction }}
+                                    </span>
+                                </td>
+                                <td>{{ (scan.confidence * 100)|round(1) }}%</td>
+                                <td>{{ scan.scan_type }}</td>
+                                <td>{{ scan.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td><a href="{{ url_for('scan_detail', scan_id=scan.id) }}" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;">View</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p style="text-align: center; color: var(--gray); padding: 60px;">
+                        <i class="fas fa-history" style="font-size: 50px; margin-bottom: 15px; display: block; opacity: 0.5;"></i>
+                        No scan history yet
+                    </p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

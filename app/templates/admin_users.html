@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Users | SecureScan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <div class="container">
+                <a href="{{ url_for('index') }}" class="logo">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>SecureScan</span>
+                </a>
+                <div class="nav-links">
+                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('admin_dashboard') }}">Admin</a>
+                    <div class="user-info">
+                        <span>{{ current_user.username }}</span>
+                        <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="container">
+                <h2 style="margin-bottom: 30px;">User Management</h2>
+                
+                <div class="admin-nav">
+                    <a href="{{ url_for('admin_dashboard') }}">Overview</a>
+                    <a href="{{ url_for('admin_users') }}" class="active">Users</a>
+                    <a href="{{ url_for('admin_scans') }}">Scans</a>
+                    <a href="{{ url_for('admin_feedback') }}">Feedback</a>
+                </div>
+                
+                <div class="section-card">
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Total Scans</th>
+                                <th>Last Login</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td>{{ user.id }}</td>
+                                <td>{{ user.username }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ 'Admin' if user.is_admin else 'User' }}</td>
+                                <td>{{ user.scans|length }}</td>
+                                <td>{{ user.last_login.strftime('%Y-%m-%d %H:%M') if user.last_login else 'Never' }}</td>
+                                <td>
+                                    <span class="status-badge {{ 'status-safe' if user.is_active else 'status-phishing' }}">
+                                        {{ 'Active' if user.is_active else 'Inactive' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if not user.is_admin %}
+                                    <button class="btn btn-outline" onclick="toggleUser({{ user.id }})" style="padding: 6px 12px; font-size: 12px;">
+                                        {{ 'Deactivate' if user.is_active else 'Activate' }}
+                                    </button>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        async function toggleUser(userId) {
+            try {
+                const response = await fetch(`/admin/user/${userId}/toggle`, { method: 'POST' });
+                const data = await response.json();
+                if (data.success) {
+                    location.reload();
+                }
+            } catch (e) {
+                alert('Error updating user');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+selenium
+beautifulsoup4
+requests
+lxml
+numpy
+pandas
+scikit-learn
+xgboost
+torch
+transformers
+flask
+flask-sqlalchemy
+flask-login
+werkzeug
+joblib
+tqdm
+gunicorn

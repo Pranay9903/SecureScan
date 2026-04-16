@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Keys | SecureScan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <div class="container">
+                <a href="{{ url_for('index') }}" class="logo">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>SecureScan</span>
+                </a>
+                <div class="nav-links">
+                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('history') }}">History</a>
+                    <a href="{{ url_for('api_keys') }}" class="active">API Keys</a>
+                    <div class="user-info">
+                        <span>{{ current_user.username }}</span>
+                        <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="container">
+                <h2 style="margin-bottom: 30px;">API Keys</h2>
+                
+                <div class="section-card">
+                    <p style="color: var(--gray); margin-bottom: 20px;">
+                        Use API keys to integrate SecureScan into your applications. 
+                        Include the key in your request headers: <code>X-API-Key: your-key</code>
+                    </p>
+                    
+                    <form method="POST" action="{{ url_for('create_api_key') }}" style="margin-bottom: 30px; display: flex; gap: 10px;">
+                        <input type="text" name="name" placeholder="Key name (e.g., My App)" style="flex: 1; padding: 12px;">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Create Key
+                        </button>
+                    </form>
+                    
+                    {% if keys %}
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Key</th>
+                                <th>Usage</th>
+                                <th>Created</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for key in keys %}
+                            <tr>
+                                <td>{{ key.name }}</td>
+                                <td><code style="background: var(--light); padding: 4px 8px; border-radius: 4px;">{{ key.key }}</code></td>
+                                <td>{{ key.usage_count }} requests</td>
+                                <td>{{ key.created_at.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    <span class="status-badge {{ 'status-safe' if key.is_active else 'status-phishing' }}">
+                                        {{ 'Active' if key.is_active else 'Revoked' }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if key.is_active %}
+                                    <form method="POST" action="{{ url_for('revoke_api_key', key_id=key.id) }}" style="display: inline;">
+                                        <button type="submit" class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;">Revoke</button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% else %}
+                    <p style="text-align: center; color: var(--gray); padding: 40px;">No API keys yet. Create one to get started!</p>
+                    {% endif %}
+                </div>
+                
+                <div class="section-card">
+                    <h3>API Documentation</h3>
+                    <pre style="background: var(--dark); color: #ccc; padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 13px;">POST /api/v1/detect
+Content-Type: application/json
+X-API-Key: your-api-key
+
+{
+  "url": "https://example.com"
+}
+
+Response:
+{
+  "url": "https://example.com",
+  "prediction": "Safe",
+  "confidence": 0.95,
+  "features": {
+    "url_length": 19,
+    "has_https": true,
+    "has_ip": false,
+    "suspicious_tld": false
+  }
+}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

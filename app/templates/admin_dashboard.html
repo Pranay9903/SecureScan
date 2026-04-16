@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | SecureScan</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard">
+        <div class="dashboard-header">
+            <div class="container">
+                <a href="{{ url_for('index') }}" class="logo">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>SecureScan</span>
+                </a>
+                <div class="nav-links">
+                    <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                    <a href="{{ url_for('admin_dashboard') }}" class="active">Admin</a>
+                    <div class="user-info">
+                        <span>{{ current_user.username }}</span>
+                        <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-content">
+            <div class="container">
+                <h2 style="margin-bottom: 30px;">Admin Dashboard</h2>
+                
+                <div class="admin-nav">
+                    <a href="{{ url_for('admin_dashboard') }}" class="active">Overview</a>
+                    <a href="{{ url_for('admin_users') }}">Users</a>
+                    <a href="{{ url_for('admin_scans') }}">Scans</a>
+                    <a href="{{ url_for('admin_feedback') }}">Feedback</a>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-card primary">
+                        <h3>Total Users</h3>
+                        <div class="value">{{ stats.total_users }}</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Scans</h3>
+                        <div class="value">{{ stats.total_scans }}</div>
+                    </div>
+                    <div class="stat-card danger">
+                        <h3>Phishing Detected</h3>
+                        <div class="value">{{ stats.phishing_scans }}</div>
+                    </div>
+                    <div class="stat-card success">
+                        <h3>Safe URLs</h3>
+                        <div class="value">{{ stats.safe_scans }}</div>
+                    </div>
+                </div>
+                
+                <div class="section-card">
+                    <h3>Recent Scans</h3>
+                    <table class="scans-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User</th>
+                                <th>URL</th>
+                                <th>Prediction</th>
+                                <th>Confidence</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for scan in scans %}
+                            <tr>
+                                <td>{{ scan.id }}</td>
+                                <td>{{ scan.user.username if scan.user else 'Anonymous' }}</td>
+                                <td style="max-width: 200px; overflow: hidden; text-overflow: ellipsis;">{{ scan.url }}</td>
+                                <td>
+                                    <span class="status-badge {{ 'status-safe' if scan.prediction == 'Safe' else 'status-phishing' }}">
+                                        {{ scan.prediction }}
+                                    </span>
+                                </td>
+                                <td>{{ (scan.confidence * 100)|round(1) }}%</td>
+                                <td>{{ scan.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="section-card">
+                    <h3>Recent Users</h3>
+                    <table class="user-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Scans</th>
+                                <th>Joined</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td>{{ user.id }}</td>
+                                <td>{{ user.username }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.scans|length }}</td>
+                                <td>{{ user.created_at.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    <span class="status-badge {{ 'status-safe' if user.is_active else 'status-phishing' }}">
+                                        {{ 'Active' if user.is_active else 'Inactive' }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
