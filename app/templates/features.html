@@ -30,10 +30,10 @@
                     <i class="fas fa-moon"></i>
                 </button>
                 {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Dashboard</a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary" style="padding:5px;">Dashboard</a>
                 {% else %}
-                    <a href="{{ url_for('login') }}" class="btn btn-outline">Login</a>
-                    <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline" style="padding:5px;">Login</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-primary" style="padding:5px;">Get Started</a>
                 {% endif %}
             </div>
             <button class="mobile-menu-btn" onclick="toggleMobileMenu()">

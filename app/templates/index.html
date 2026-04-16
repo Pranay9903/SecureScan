@@ -32,11 +32,11 @@
                     <i class="fas fa-moon"></i>
                 </button>
                 {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Dashboard</a>
-                    <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary" style="padding:5px;">Dashboard</a>
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline" style="padding:5px;">Logout</a>
                 {% else %}
-                    <a href="{{ url_for('login') }}" class="btn btn-outline">Login</a>
-                    <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline" style="padding:5px;">Login</a>
+                    <a href="{{ url_for('register') }}" class="btn btn-primary" style="padding:5px;">Get Started</a>
                 {% endif %}
             </div>
             <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
@@ -54,7 +54,7 @@
                 <h1>Next-Gen Phishing Detection</h1>
                 <p>Protect yourself from zero-day phishing attacks using cutting-edge AI. Analyze URLs in real-time with 98%+ accuracy.</p>
                 <div class="hero-buttons">
-                    <a href="{{ url_for('register') }}" class="btn btn-lg btn-primary">
+                    <a href="{{ url_for('register') }}" class="btn btn-lg btn-primary" style="margin-right: 15px;">
                         <i class="fas fa-rocket"></i> Start Free
                     </a>
                     <a href="{{ url_for('features_page') }}" class="btn btn-lg btn-outline">
@@ -83,9 +83,10 @@
                     <div class="scanner-ring ring-middle"></div>
                     <div class="scanner-ring ring-inner"></div>
                     <div class="scanner-core"></div>
-                    <button class="scan-btn" onclick="quickScan()" title="Click to scan">
-                        <i class="fas fa-radar"></i>
+                    <button class="scan-btn" onclick="handleScannerClick()" id="scanBtn" title="Click to scan - Keep clicking for points!">
+                        <i class="fas fa-radar" id="scannerIcon"></i>
                     </button>
+                    <div class="click-counter" id="clickCounter">0</div>
                 </div>
                 <div class="demo-header">
                     <div class="demo-dots">
@@ -253,6 +254,10 @@
 
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
+        let clickCount = 0;
+        let scannerActive = true;
+        let clickTimeout;
+        
         function animateScanner() {
             const scanner = document.getElementById('circularScanner');
             if (scanner) {
@@ -261,6 +266,84 @@
                     scanner.style.transform = 'scale(1)';
                 }, 200);
             }
+        }
+        
+        function handleScannerClick() {
+            if (!scannerActive) {
+                showScorePopup();
+                return;
+            }
+            
+            clickCount++;
+            const counterEl = document.getElementById('clickCounter');
+            const iconEl = document.getElementById('scannerIcon');
+            
+            if (counterEl) {
+                counterEl.textContent = clickCount;
+            }
+            
+            if (iconEl) {
+                const icons = ['fa-radar', 'fa-bolt', 'fa-bolt', 'fa-ghost', 'fa-ghost', 'fa-dragon'];
+                iconEl.className = 'fas ' + icons[Math.floor(Math.random() * icons.length)];
+            }
+            
+            animateScanner();
+            
+            setTimeout(() => {
+                if (iconEl) iconEl.className = 'fas fa-radar';
+            }, 500);
+            
+            clearTimeout(clickTimeout);
+            clickTimeout = setTimeout(() => {
+                if (clickCount > 0) {
+                    stopScanner();
+                }
+            }, 1000);
+        }
+        
+        function stopScanner() {
+            scannerActive = false;
+            showScorePopup();
+        }
+        
+        function showScorePopup() {
+            const popup = document.createElement('div');
+            popup.className = 'score-popup';
+            popup.innerHTML = `
+                <div class="score-content">
+                    <h3><i class="fas fa-trophy"></i> Score Revealed!</h3>
+                    <div class="score-number">${clickCount}</div>
+                    <p>${getScoreMessage(clickCount)}</p>
+                    <button class="btn btn-primary" onclick="resetScanner()">
+                        <i class="fas fa-redo"></i> Play Again
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(popup);
+            
+            setTimeout(() => popup.classList.add('show'), 10);
+        }
+        
+        function getScoreMessage(score) {
+            if (score < 5) return "Keep clicking! You're just getting started.";
+            if (score < 15) return "Nice! You've got some rhythm going.";
+            if (score < 25) return "Impressive clicking speed!";
+            if (score < 40) return "Wow! You're a clicking machine!";
+            return "Legendary! You're scanner-certified!";
+        }
+        
+        function resetScanner() {
+            clickCount = 0;
+            scannerActive = true;
+            const counterEl = document.getElementById('clickCounter');
+            const popup = document.querySelector('.score-popup');
+            if (counterEl) counterEl.textContent = '0';
+            if (popup) popup.remove();
+        }
+        
+        function stopScanner() {
+            scannerActive = false;
+            showScorePopup();
         }
         
         async function quickScan() {

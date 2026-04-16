@@ -5,13 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bookmarks | SecureScan</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.css">
     <script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
 </head>
 <body>
+    <div class="background-effects">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
     <div class="dashboard">
-        <div class="dashboard-header">
+        <div class="navbar" style="position: fixed; top: 0; z-index: 1001;">
             <div class="container">
                 <a href="{{ url_for('index') }}" class="logo">
                     <i class="fas fa-shield-halved"></i>
@@ -23,21 +28,27 @@
                     <a href="{{ url_for('history') }}">History</a>
                     <a href="{{ url_for('api_keys') }}">API Keys</a>
                     <a href="{{ url_for('bookmarks') }}" class="active">Bookmarks</a>
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
                     <div class="user-info">
                         <div class="user-avatar">{{ current_user.username[0]|upper }}</div>
                         <span>{{ current_user.username }}</span>
-                        {% if current_user.is_admin %}
-                            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline" style="margin-left: 10px;">Admin</a>
-                        {% endif %}
-                        <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
                     </div>
+                    {% if current_user.is_admin %}
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">Admin</a>
+                    {% endif %}
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
                 </div>
             </div>
         </div>
         
-        <div class="dashboard-content">
+        <div class="dashboard-content" style="padding-top: 120px;">
             <div class="container">
-                <h2 style="margin-bottom: 30px;">Bookmarked Scans</h2>
+                <h2 style="margin-bottom: 40px; font-size: 36px;">
+                    <i class="fas fa-bookmark" style="color: var(--primary);"></i>
+                    Bookmarked Scans
+                </h2>
                 
                 {% if bookmarks %}
                 <div class="section-card">
@@ -63,8 +74,8 @@
                                 <td>{{ (bookmark.scan.confidence * 100)|round(1) }}%</td>
                                 <td>{{ bookmark.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
                                 <td>
-                                    <a href="{{ url_for('scan_detail', scan_id=bookmark.scan.id) }}" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;">View</a>
-                                    <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; margin-left: 5px;" onclick="removeBookmark({{ bookmark.scan.id }})">
+                                    <a href="{{ url_for('scan_detail', scan_id=bookmark.scan.id) }}" class="btn btn-outline" style="padding: 6px 12px; font-size: 12px; margin-right: 5px;">View</a>
+                                    <button class="btn btn-outline" style="padding: 6px 10px; font-size: 12px;" onclick="removeBookmark({{ bookmark.scan.id }})">
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </td>
@@ -74,11 +85,11 @@
                     </table>
                 </div>
                 {% else %}
-                <div class="section-card" style="text-align: center; padding: 60px;">
-                    <i class="fas fa-bookmark" style="font-size: 48px; color: var(--gray); margin-bottom: 20px;"></i>
-                    <h3 style="color: var(--gray);">No bookmarks yet</h3>
-                    <p style="color: var(--gray); margin-top: 10px;">Bookmark scans from your history to access them quickly.</p>
-                    <a href="{{ url_for('history') }}" class="btn btn-primary" style="margin-top: 20px;">
+                <div class="section-card" style="text-align: center; padding: 80px;">
+                    <i class="fas fa-bookmark" style="font-size: 64px; color: var(--primary); margin-bottom: 25px; opacity: 0.3;"></i>
+                    <h3 style="color: var(--text-secondary); margin-bottom: 15px;">No bookmarks yet</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 25px;">Bookmark scans from your history to access them quickly.</p>
+                    <a href="{{ url_for('history') }}" class="btn btn-primary">
                         <i class="fas fa-history"></i> View History
                     </a>
                 </div>

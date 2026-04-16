@@ -5,10 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About | SecureScan</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.css">
+    <script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
 </head>
 <body>
+    <div class="background-effects">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+    <div class="grid-overlay"></div>
+
     <nav class="navbar">
         <div class="container">
             <a href="{{ url_for('index') }}" class="logo">
@@ -16,9 +23,12 @@
                 <span>SecureScan</span>
             </a>
             <div class="nav-links">
-                <a href="{{ url_for('index') }}" >Home</a>
+                <a href="{{ url_for('index') }}">Home</a>
                 <a href="{{ url_for('features_page') }}">Features</a>
                 <a href="{{ url_for('about') }}">About</a>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
                 {% if current_user.is_authenticated %}
                     <a href="{{ url_for('dashboard') }}" class="btn btn-primary">Dashboard</a>
                 {% else %}
@@ -26,12 +36,23 @@
                     <a href="{{ url_for('register') }}" class="btn btn-primary">Get Started</a>
                 {% endif %}
             </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
         </div>
     </nav>
-<section style="padding: 80px 0; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-        <div class="container">
-            <h1 style="font-size: 48px; margin-bottom: 20px; text-align: center;">About SecureScan</h1>
-            <p style="font-size: 20px; text-align: center; color: rgba(255,255,255,0.9);">Advanced phishing detection system powered by cutting-edge NLP and Machine Learning technologies.</p>
+
+    <section style="padding: 160px 0 100px; position: relative;">
+        <div class="container" style="text-align: center;">
+            <div class="badge" style="margin-bottom: 30px;">
+                <i class="fas fa-info-circle"></i> About Us
+            </div>
+            <h1 style="font-size: 56px; margin-bottom: 25px; background: linear-gradient(135deg, var(--text-primary), var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+                About SecureScan
+            </h1>
+            <p style="font-size: 22px; color: var(--text-secondary); max-width: 700px; margin: 0 auto;">
+                Advanced phishing detection system powered by cutting-edge NLP and Machine Learning technologies
+            </p>
         </div>
     </section>
 
@@ -55,24 +76,55 @@
                 </div>
             </div>
             
-            <div style="margin-top: 60px;">
-                <h2 style="text-align: center; margin-bottom: 40px;">Technology Stack</h2>
+            <div style="margin-top: 80px;">
+                <h2 style="text-align: center; margin-bottom: 50px; font-size: 36px;">Technology Stack</h2>
                 <div style="display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;">
-                    <div style="text-align: center; padding: 20px;">
+                    <div style="text-align: center; padding: 30px; background: var(--card-bg); border-radius: 20px; border: 1px solid var(--glass-border); min-width: 150px;">
                         <i class="fab fa-python" style="font-size: 48px; color: var(--primary);"></i>
-                        <p style="margin-top: 10px;">Python</p>
+                        <p style="margin-top: 15px; color: var(--text-secondary);">Python</p>
                     </div>
-                    <div style="text-align: center; padding: 20px;">
+                    <div style="text-align: center; padding: 30px; background: var(--card-bg); border-radius: 20px; border: 1px solid var(--glass-border); min-width: 150px;">
                         <i class="fas fa-brain" style="font-size: 48px; color: var(--primary);"></i>
-                        <p style="margin-top: 10px;">TensorFlow/PyTorch</p>
+                        <p style="margin-top: 15px; color: var(--text-secondary);">TensorFlow/PyTorch</p>
                     </div>
-                    <div style="text-align: center; padding: 20px;">
+                    <div style="text-align: center; padding: 30px; background: var(--card-bg); border-radius: 20px; border: 1px solid var(--glass-border); min-width: 150px;">
                         <i class="fas fa-robot" style="font-size: 48px; color: var(--primary);"></i>
-                        <p style="margin-top: 10px;">Transformers (BERT)</p>
+                        <p style="margin-top: 15px; color: var(--text-secondary);">Transformers (BERT)</p>
                     </div>
-                    <div style="text-align: center; padding: 20px;">
+                    <div style="text-align: center; padding: 30px; background: var(--card-bg); border-radius: 20px; border: 1px solid var(--glass-border); min-width: 150px;">
                         <i class="fas fa-flask" style="font-size: 48px; color: var(--primary);"></i>
-                        <p style="margin-top: 10px;">Flask</p>
+                        <p style="margin-top: 15px; color: var(--text-secondary);">Flask</p>
+                    </div>
+                    <div style="text-align: center; padding: 30px; background: var(--card-bg); border-radius: 20px; border: 1px solid var(--glass-border); min-width: 150px;">
+                        <i class="fas fa-database" style="font-size: 48px; color: var(--primary);"></i>
+                        <p style="margin-top: 15px; color: var(--text-secondary);">SQLAlchemy</p>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 80px;">
+                <h2 style="text-align: center; margin-bottom: 50px; font-size: 36px;">Meet the Developer</h2>
+                <div style="display: flex; justify-content: center;">
+                    <div style="background: var(--card-bg); border-radius: 30px; padding: 40px; border: 1px solid var(--glass-border); text-align: center; max-width: 500px;">
+                        <div style="width: 120px; height: 120px; background: linear-gradient(135deg, var(--primary), var(--secondary)); border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 25px; box-shadow: 0 15px 40px var(--primary-glow);">
+                            <i class="fas fa-user" style="font-size: 48px; color: white;"></i>
+                        </div>
+                        <h3 style="font-size: 28px; margin-bottom: 10px;">Pranay Kadam</h3>
+                        <p style="color: var(--primary); font-size: 18px; margin-bottom: 20px;">Full Stack Developer & AI Enthusiast</p>
+                        <p style="color: var(--text-secondary); margin-bottom: 25px;">
+                            Passionate about building AI-powered security solutions and creating intuitive user experiences.
+                        </p>
+                        <div style="display: flex; justify-content: center; gap: 15px;">
+                            <a href="https://github.com/Pranay9903" target="_blank" style="width: 50px; height: 50px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary); transition: all 0.3s;">
+                                <i class="fab fa-github" style="font-size: 20px;"></i>
+                            </a>
+                            <a href="https://www.linkedin.com/in/pranay-kadam-594147243" target="_blank" style="width: 50px; height: 50px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary); transition: all 0.3s;">
+                                <i class="fab fa-linkedin" style="font-size: 20px;"></i>
+                            </a>
+                            <a href="https://wa.me/919967010387" target="_blank" style="width: 50px; height: 50px; background: var(--glass); border: 1px solid var(--glass-border); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--primary); transition: all 0.3s;">
+                                <i class="fab fa-whatsapp" style="font-size: 20px;"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -81,10 +133,43 @@
 
     <footer class="footer">
         <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="{{ url_for('index') }}" class="logo">
+                        <i class="fas fa-shield-halved"></i>
+                        <span>SecureScan</span>
+                    </a>
+                    <p>Advanced phishing detection powered by AI.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Product</h4>
+                    <a href="{{ url_for('features_page') }}">Features</a>
+                    <a href="{{ url_for('about') }}">About</a>
+                    <a href="#">Pricing</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Company</h4>
+                    <a href="#">Team</a>
+                    <a href="#">Blog</a>
+                    <a href="#">Contact</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Legal</h4>
+                    <a href="#">Privacy</a>
+                    <a href="#">Terms</a>
+                </div>
+            </div>
             <div class="footer-bottom">
                 <p>&copy; 2024 SecureScan. All rights reserved.</p>
             </div>
         </div>
     </footer>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        function toggleMobileMenu() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        }
+    </script>
 </body>
 </html>

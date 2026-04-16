@@ -5,41 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>API Keys | SecureScan</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.css">
+    <script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
 </head>
 <body>
+    <div class="background-effects">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
     <div class="dashboard">
-        <div class="dashboard-header">
+        <div class="navbar" style="position: fixed; top: 0; z-index: 1001;">
             <div class="container">
                 <a href="{{ url_for('index') }}" class="logo">
                     <i class="fas fa-shield-halved"></i>
                     <span>SecureScan</span>
                 </a>
+                
                 <div class="nav-links">
                     <a href="{{ url_for('dashboard') }}">Dashboard</a>
                     <a href="{{ url_for('history') }}">History</a>
                     <a href="{{ url_for('api_keys') }}" class="active">API Keys</a>
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
                     <div class="user-info">
+                        <div class="user-avatar">{{ current_user.username[0]|upper }}</div>
                         <span>{{ current_user.username }}</span>
-                        <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
                     </div>
+                    {% if current_user.is_admin %}
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">Admin</a>
+                    {% endif %}
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
                 </div>
             </div>
         </div>
         
-        <div class="dashboard-content">
+        <div class="dashboard-content" style="padding-top: 120px;">
             <div class="container">
-                <h2 style="margin-bottom: 30px;">API Keys</h2>
+                <h2 style="margin-bottom: 40px; font-size: 36px;">
+                    <i class="fas fa-key" style="color: var(--primary);"></i>
+                    API Keys
+                </h2>
                 
                 <div class="section-card">
-                    <p style="color: var(--gray); margin-bottom: 20px;">
+                    <p style="color: var(--text-secondary); margin-bottom: 25px;">
+                        <i class="fas fa-info-circle" style="color: var(--primary);"></i>
                         Use API keys to integrate SecureScan into your applications. 
-                        Include the key in your request headers: <code>X-API-Key: your-key</code>
+                        Include the key in your request headers: <code style="background: var(--glass); padding: 4px 10px; border-radius: 6px; font-family: 'Courier New', monospace;">X-API-Key: your-key</code>
                     </p>
                     
-                    <form method="POST" action="{{ url_for('create_api_key') }}" style="margin-bottom: 30px; display: flex; gap: 10px;">
-                        <input type="text" name="name" placeholder="Key name (e.g., My App)" style="flex: 1; padding: 12px;">
+                    <form method="POST" action="{{ url_for('create_api_key') }}" style="margin-bottom: 30px; display: flex; gap: 15px;">
+                        <input type="text" name="name" placeholder="Key name (e.g., My App)" style="flex: 1; padding: 14px 18px; border: 2px solid var(--border); border-radius: 15px; background: var(--glass); color: var(--text-primary);">
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-plus"></i> Create Key
                         </button>
@@ -61,8 +79,8 @@
                             {% for key in keys %}
                             <tr>
                                 <td>{{ key.name }}</td>
-                                <td><code style="background: var(--light); padding: 4px 8px; border-radius: 4px;">{{ key.key }}</code></td>
-                                <td>{{ key.usage_count }} requests</td>
+                                <td><code style="background: var(--glass); padding: 6px 12px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 12px;">{{ key.key[:20] }}...</code></td>
+                                <td><span style="color: var(--primary); font-weight: 600;">{{ key.usage_count }}</span> requests</td>
                                 <td>{{ key.created_at.strftime('%Y-%m-%d') }}</td>
                                 <td>
                                     <span class="status-badge {{ 'status-safe' if key.is_active else 'status-phishing' }}">
@@ -72,7 +90,7 @@
                                 <td>
                                     {% if key.is_active %}
                                     <form method="POST" action="{{ url_for('revoke_api_key', key_id=key.id) }}" style="display: inline;">
-                                        <button type="submit" class="btn btn-danger" style="padding: 6px 12px; font-size: 12px;">Revoke</button>
+                                        <button type="submit" class="btn btn-danger" style="padding: 8px 16px; font-size: 12px;">Revoke</button>
                                     </form>
                                     {% endif %}
                                 </td>
@@ -81,13 +99,17 @@
                         </tbody>
                     </table>
                     {% else %}
-                    <p style="text-align: center; color: var(--gray); padding: 40px;">No API keys yet. Create one to get started!</p>
+                    <div style="text-align: center; padding: 60px; color: var(--text-secondary);">
+                        <i class="fas fa-key" style="font-size: 48px; margin-bottom: 15px; opacity: 0.3;"></i>
+                        <p>No API keys yet. Create one to get started!</p>
+                    </div>
                     {% endif %}
                 </div>
                 
                 <div class="section-card">
-                    <h3>API Documentation</h3>
-                    <pre style="background: var(--dark); color: #ccc; padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 13px;">POST /api/v1/detect
+                    <h3 style="margin-bottom: 25px;"><i class="fas fa-book" style="color: var(--secondary);"></i> API Documentation</h3>
+                    <pre style="background: var(--glass); color: var(--text-secondary); padding: 25px; border-radius: 15px; overflow-x: auto; font-size: 13px; font-family: 'Courier New', monospace; border: 1px solid var(--border);">
+POST /api/v1/detect
 Content-Type: application/json
 X-API-Key: your-api-key
 
@@ -111,5 +133,7 @@ Response:
             </div>
         </div>
     </div>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 </html>

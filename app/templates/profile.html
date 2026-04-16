@@ -5,13 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile | SecureScan</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.css">
     <script>if(localStorage.getItem('theme')==='dark')document.documentElement.setAttribute('data-theme','dark');</script>
 </head>
 <body>
+    <div class="background-effects">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
     <div class="dashboard">
-        <div class="dashboard-header">
+        <div class="navbar" style="position: fixed; top: 0; z-index: 1001;">
             <div class="container">
                 <a href="{{ url_for('index') }}" class="logo">
                     <i class="fas fa-shield-halved"></i>
@@ -23,21 +28,27 @@
                     <a href="{{ url_for('history') }}">History</a>
                     <a href="{{ url_for('api_keys') }}">API Keys</a>
                     <a href="{{ url_for('profile') }}" class="active">Profile</a>
+                    <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                        <i class="fas fa-moon"></i>
+                    </button>
                     <div class="user-info">
                         <div class="user-avatar">{{ current_user.username[0]|upper }}</div>
                         <span>{{ current_user.username }}</span>
-                        {% if current_user.is_admin %}
-                            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline" style="margin-left: 10px;">Admin</a>
-                        {% endif %}
-                        <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
                     </div>
+                    {% if current_user.is_admin %}
+                        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline">Admin</a>
+                    {% endif %}
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline">Logout</a>
                 </div>
             </div>
         </div>
         
-        <div class="dashboard-content">
+        <div class="dashboard-content" style="padding-top: 120px;">
             <div class="container">
-                <h2 style="margin-bottom: 30px;">Profile Settings</h2>
+                <h2 style="margin-bottom: 40px; font-size: 36px;">
+                    <i class="fas fa-user-cog" style="color: var(--primary);"></i>
+                    Profile Settings
+                </h2>
                 
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
@@ -47,18 +58,18 @@
                     {% endif %}
                 {% endwith %}
                 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px;">
                     <div class="section-card">
-                        <h3>Account Information</h3>
+                        <h3 style="margin-bottom: 25px;"><i class="fas fa-user" style="color: var(--primary);"></i> Account Information</h3>
                         <form method="POST">
                             <div class="form-group">
                                 <label for="username">Username</label>
-                                <input type="text" id="username" name="username" value="{{ current_user.username }}" required>
+                                <input type="text" id="username" name="username" value="{{ current_user.username }}" style="padding: 14px 18px; border: 2px solid var(--border); border-radius: 15px; background: var(--glass); color: var(--text-primary);">
                             </div>
                             
                             <div class="form-group">
                                 <label for="email">Email</label>
-                                <input type="email" id="email" name="email" value="{{ current_user.email }}" required>
+                                <input type="email" id="email" name="email" value="{{ current_user.email }}" style="padding: 14px 18px; border: 2px solid var(--border); border-radius: 15px; background: var(--glass); color: var(--text-primary);">
                             </div>
                             
                             <button type="submit" class="btn btn-primary">
@@ -68,32 +79,32 @@
                     </div>
                     
                     <div class="section-card">
-                        <h3>Change Password</h3>
+                        <h3 style="margin-bottom: 25px;"><i class="fas fa-lock" style="color: var(--secondary);"></i> Change Password</h3>
                         <form method="POST">
                             <div class="form-group">
                                 <label for="new_password">New Password</label>
-                                <input type="password" id="new_password" name="new_password" placeholder="Enter new password (min 8 chars)">
-                                <small style="color: var(--gray);">Min 8 chars, include letters, numbers & special chars</small>
+                                <input type="password" id="new_password" name="new_password" placeholder="Enter new password" style="padding: 14px 18px; border: 2px solid var(--border); border-radius: 15px; background: var(--glass); color: var(--text-primary);">
+                                <small style="color: var(--text-secondary); display: block; margin-top: 8px;">Min 8 chars, include letters, numbers & special chars</small>
                             </div>
                             
                             <div class="form-group">
                                 <label for="confirm_password">Confirm Password</label>
-                                <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm new password">
+                                <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm new password" style="padding: 14px 18px; border: 2px solid var(--border); border-radius: 15px; background: var(--glass); color: var(--text-primary);">
                             </div>
                             
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-lock"></i> Update Password
+                                <i class="fas fa-key"></i> Update Password
                             </button>
                         </form>
                     </div>
                 </div>
                 
-                <div class="section-card" style="margin-top: 20px;">
-                    <h3>Account Statistics</h3>
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 15px;">
+                <div class="section-card" style="margin-top: 25px;">
+                    <h3 style="margin-bottom: 25px;"><i class="fas fa-chart-bar" style="color: var(--success);"></i> Account Statistics</h3>
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 20px;">
                         <div class="stat-card">
                             <h3>Total Scans</h3>
-                            <div class="value">{{ scans_count }}</div>
+                            <div class="value" style="color: var(--primary);">{{ scans_count }}</div>
                         </div>
                         <div class="stat-card">
                             <h3>Member Since</h3>
@@ -110,9 +121,9 @@
                     </div>
                 </div>
                 
-                <div class="section-card" style="margin-top: 20px;">
-                    <h3>Danger Zone</h3>
-                    <p style="color: var(--gray); margin-bottom: 15px;">Once you delete your account, there is no going back.</p>
+                <div class="section-card" style="margin-top: 25px; border-color: var(--danger);">
+                    <h3 style="margin-bottom: 15px; color: var(--danger);"><i class="fas fa-exclamation-triangle"></i> Danger Zone</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 20px;">Once you delete your account, there is no going back.</p>
                     <button class="btn btn-danger" onclick="confirmDeleteAccount()">
                         <i class="fas fa-trash"></i> Delete Account
                     </button>

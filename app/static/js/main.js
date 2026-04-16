@@ -17,10 +17,12 @@ function initTheme() {
 }
 
 function updateThemeIcon() {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    document.querySelectorAll('.theme-toggle i').forEach(icon => {
-        icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
-    });
+    try {
+        const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+        document.querySelectorAll('.theme-toggle i').forEach(icon => {
+            icon.className = isDark ? 'fas fa-sun' : 'fas fa-moon';
+        });
+    } catch (e) {}
 }
 
 function toggleTheme() {

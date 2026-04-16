@@ -16,6 +16,27 @@
     </div>
     <div class="grid-overlay"></div>
 
+    <nav class="navbar" style="position: relative; background: transparent; border-bottom: none;">
+        <div class="container">
+            <a href="{{ url_for('index') }}" class="logo">
+                <i class="fas fa-shield-halved"></i>
+                <span>SecureScan</span>
+            </a>
+            <div class="nav-links">
+                <a href="{{ url_for('index') }}">Home</a>
+                <a href="{{ url_for('features_page') }}">Features</a>
+                <a href="{{ url_for('about') }}">About</a>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <a href="{{ url_for('login') }}" class="btn btn-primary">Login</a>
+            </div>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
     <div class="auth-page">
         <div class="auth-card">
             <div style="text-align: center; margin-bottom: 30px;">
@@ -76,11 +97,17 @@
             <p class="alt-link">Already have an account? <a href="{{ url_for('login') }}">Sign in</a></p>
             
             <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid var(--border);">
-                <button class="theme-toggle" onclick="if(document.documentElement.getAttribute('data-theme')==='dark'){document.documentElement.removeAttribute('data-theme');localStorage.setItem('theme','light')}else{document.documentElement.setAttribute('data-theme','dark');localStorage.setItem('theme','dark')}" style="width: 50px; height: 50px; border-radius: 50%;">
+                <button class="theme-toggle" onclick="toggleTheme()" style="width: 50px; height: 50px; border-radius: 50%;">
                     <i class="fas fa-moon"></i>
                 </button>
             </div>
         </div>
     </div>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        function toggleMobileMenu() {
+            document.querySelector('.nav-links').classList.toggle('active');
+        }
+    </script>
 </body>
 </html>
